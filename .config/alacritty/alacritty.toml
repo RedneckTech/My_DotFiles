@@ -1,0 +1,45 @@
+[window]
+position = "None"
+decorations = "None"
+opacity = 0.85
+dynamic_padding = false
+
+[window.dimensions]
+columns = 1100
+lines = 1000
+
+[window.padding]
+x = 6
+y = 6
+
+[env]
+TERM = "xterm-256color"
+
+[scrolling]
+history = 20000
+multiplier = 2
+
+[font]
+size = 12
+
+[font.normal]
+family = "D2Coding"
+style = "Regular"
+
+[font.bold]
+family = "D2Coding"
+style = "Bold"
+
+[font.italic]
+family = "D2Coding"
+style = "Italic"
+
+[font.bold_italic]
+family = "D2Coding"
+style = "Bold Italic"
+
+[terminal]
+osc52 = "CopyPaste"
+
+[mouse]
+hide_when_typing = true
