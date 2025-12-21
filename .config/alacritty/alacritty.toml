@@ -5,8 +5,8 @@ opacity = 0.85
 dynamic_padding = false
 
 [window.dimensions]
-columns = 1100
-lines = 1000
+columns = 220
+lines = 50
 
 [window.padding]
 x = 6
@@ -22,21 +22,21 @@ multiplier = 2
 [font]
 size = 12
 
-[font.normal]
-family = "D2Coding"
-style = "Regular"
+#[font.normal]
+#family = "D2Coding"
+#style = "Regular"
 
-[font.bold]
-family = "D2Coding"
-style = "Bold"
+#[font.bold]
+#family = "D2Coding"
+#style = "Bold"
 
-[font.italic]
-family = "D2Coding"
-style = "Italic"
+#[font.italic]
+#family = "D2Coding"
+#style = "Italic"
 
-[font.bold_italic]
-family = "D2Coding"
-style = "Bold Italic"
+#[font.bold_italic]
+#family = "D2Coding"
+#style = "Bold Italic"
 
 [terminal]
 osc52 = "CopyPaste"
