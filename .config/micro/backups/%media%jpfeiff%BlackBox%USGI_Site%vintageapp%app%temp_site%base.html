@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width,initial-scale=1">
+	<title>Vintage Job Queue</title>
+	<link rel="stylesheet" href="filename='styles.css')">
+	"{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+	<header class="site-header">
+		<div class="container">
+			<h1 class="brand">Vintage Job Queue</h1>
+			<nav class="site-nav">
+				{% if current_user.is_authenticated %}
+					<a href="{{ url_for('index') }}">Home</a>
+					<a href="{{ url_for('new_job') }}">New Job</a>
+					<a href="{{ url_for('logout') }}">Logout</a>
+				{% else %}
+					<a href="{{ url_for('login') }}">Login</a>
+					<a href="{{ url_for('register') }}">Register</a>
+				{% endif %}
+			</nav>
+		</div>
+	</header>
+
+<main class="container">
+{% with messages = get_flashed_messages(with_categories=true) %}
+{% for cat, msg in messages %}
+<div class="flash flash-{{ cat }}">{{ msg }}</div>
+{% endfor %}
+{% endwith %}
+
+
+{% block content %}{% endblock %}
+</main>
+
+
+<footer class="site-footer">
+	<div class="container">
+		<small>© Vintage Lab - RS-232 Job Queue</small>
+	</div>
+</footer>
+</body>
+</html>
