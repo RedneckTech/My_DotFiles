@@ -362,4 +362,6 @@ alias df='df -h'
 alias free='free -m'
 # colorize output (good for log files)
 alias grep='grep --color=auto'
+#close Terms
+alias ee="exit"
 

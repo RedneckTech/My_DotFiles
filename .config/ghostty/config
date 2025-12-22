@@ -47,3 +47,15 @@
 # # which is explained in the docs for that config option.
 # # Just for example:
 # resize-overlay-duration = 4s 200ms
+
+#################################
+#			User Setup			#
+#################################
+
+async-backend = epoll
+theme = Belafonte Night
+mouse-hide-while-typing
+scrollback-limit = 20000
+window-height = 50
+window-width = 200
+

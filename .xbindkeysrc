@@ -72,6 +72,12 @@
 "rofi -show run"
 	Mod1 + r
 
+# Termanals
+"ghostty"
+	Mod1 + g
+
+"alacritty"
+	Mod1 + a
 
 ##################################
 # End of xbindkeys configuration #
