@@ -151,6 +151,11 @@ function note {
 #Costom Alias
 ############################################
 
+# Script Alias
+alias mvp="mvp.sh"
+alias cpp="cpp.sh"
+alias wis="whereis.sh"
+
 # Changing "ls" to "eza"
 alias ls='eza -al --color=always --group-directories-first'
 alias la='eza -a --color=always --group-directories-first'
