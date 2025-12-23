@@ -197,3 +197,5 @@ alias free='free -m'
 alias grep='grep --color=auto'
 #close Terms
 alias ee="exit"
+# swapoff
+alias swapoff="sudo swapoff -a"
