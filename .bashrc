@@ -170,6 +170,11 @@ alias cdq="zq"
 alias cdad="z add"
 alias cdr="z remove"
 
+# c3270 sets
+alias cbb="c3270 -oversize 80x43 moshix.tech:2300"
+alias ctk4="c3270 -oversize 80x43 127.0.0.1:3270"
+alias ctk5="c3270 -oversize 80x43 127.0.0.1:3271"
+
 # Git
 alias gitcl="git clone"
 alias gitad="git add ."
