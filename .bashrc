@@ -175,6 +175,9 @@ alias cbb="c3270 -oversize 80x43 moshix.tech:2300"
 alias ctk4="c3270 -oversize 80x43 127.0.0.1:3270"
 alias ctk5="c3270 -oversize 80x43 127.0.0.1:3271"
 
+# Ext. Servers
+alias ironops="ssh -i ~/.ssh/ssh-key-2026-02-23.key ubuntu@207.211.178.116"
+
 # Git
 alias gitcl="git clone"
 alias gitad="git add ."
