@@ -1,0 +1,66 @@
+filetype: basic3270bbs
+
+detect:
+    filename: "(?i)\\.bas$"
+    header: "(?i)^\\s*(START:|[0-9]+\\s+(REM|PRINT|INPUT|LET|IF|FOR|WHILE|DIM|OPEN|COMMON|CHAIN|DEF|GOTO|GOSUB))"
+
+rules:
+    # Line numbers at start of traditional BASIC lines
+    - constant.number: "^\\s*[0-9]+\\b"
+
+    # Label-mode labels: START:, Done:, AddContact:, etc.
+    - identifier.class: "^\\s*[A-Za-z_][A-Za-z0-9_]*:"
+
+    # Strings
+    - constant.string:
+        start: "\""
+        end: "\""
+        skip: "\\\\."
+
+    # Comments: REM and apostrophe comments
+    - comment: "(?i)^\\s*([0-9]+\\s+)?REM\\b.*$"
+    - comment: "(?i):\\s*REM\\b.*$"
+    - comment: "(^|\\s|:)'.*$"
+
+    # Program / editor commands
+    - statement: "(?i)\\b(RUN|LIST|NEW|SAVE|LOAD|RENAME|EDIT|BROWSE|ERASE|FILES|FLIST|RENUM|DELETE|HELP|VARS|CLEAR|BYE|EXIT|QUIT|CHECK|VIEW|EMAIL)\\b"
+
+    # Core BASIC statements
+    - statement: "(?i)\\b(PRINT|INPUT|LET|IF|THEN|ELSE|ELSEIF|ENDIF|GOTO|GOSUB|RETURN|FOR|TO|STEP|NEXT|WHILE|WEND|SELECT|CASE|DIM|COMMON|CHAIN|OPEN|CLOSE|PUT|GET|RESET|DEF|FN|STOP|END|CLS|SLEEP)\\b"
+
+    # Multi-word statement forms
+    - statement: "(?i)\\b(END\\s+IF|END\\s+SELECT|SELECT\\s+CASE|CASE\\s+ELSE|ON\\s+.+\\s+GOTO|ON\\s+.+\\s+GOSUB)\\b"
+
+    # File I/O and indexed-file words
+    - type.keyword: "(?i)\\b(FOR\\s+INPUT|FOR\\s+OUTPUT|FOR\\s+APPEND|FOR\\s+INDEXED|AS|KEY|REC|NEXT|FOUND|DELETED|EOF)\\b"
+
+    # PRINT COLOR support
+    - constant.specialChar: "(?i)\\b(COLOR|WHITE|RED|YELLOW|PINK|GREEN|BLUE|TURQUOISE|BLINK|REVERSEVIDEO)\\b"
+
+    # Operators
+    - symbol.operator: "(?i)\\b(AND|OR|NOT|MOD)\\b|[-+*/^=<>]+"
+
+    # Numbers
+    - constant.number: "\\b[0-9]+(\\.[0-9]+)?\\b"
+
+    # Built-in math functions
+    - identifier.class: "(?i)\\b(ABS|INT|SGN|SQRT|SQR|SIN|COS|TAN|ATAN|ASIN|ACOS|LOG|EXP|RND|PI|RADIANS|DEGREES)\\s*\\("
+
+    # Built-in string functions
+    - identifier.class: "(?i)\\b(LEN|LEFT\\$|RIGHT\\$|MID\\$|CHR\\$|BOXCHAR\\$|CP310\\$|ASC|STR\\$|VAL|SPACE\\$|UCASE\\$|LCASE\\$|TRIM\\$|LTRIM\\$|RTRIM\\$|INSTR|REPLACE\\$)\\s*\\("
+
+    # Time, terminal, utility, and runtime functions
+    - identifier.class: "(?i)\\b(TIME\\$|DATE\\$|TIMER|HOUR|MINUTE|SECOND|YEAR|MONTH|DAY|TAB|EVAL|EOF|FOUND|DELETED)\\s*\\("
+
+    # 3270BBS data-access functions / variables
+    - preproc: "(?i)\\$(ChatMessage|Mail|UserInfo|TermInfo|Topic|Post)\\b"
+
+    # Variables: NAME$, COUNT, ARRAY(), ASSOC{}, PHONE${}
+    - identifier.var: "\\b[A-Za-z][A-Za-z0-9]*\\$?\\b"
+
+    # File handles: #1 through #4
+    - constant.specialChar: "#[1-4]\\b"
+
+    # Brackets, braces, commas, semicolons, colons
+    - symbol.brackets: "[(){}\\[\\]]"
+    - symbol: "[,;:]"
