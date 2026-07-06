@@ -120,6 +120,26 @@ fi
 # Personal Config
 #############################################
 
+export PAGER='less'
+
+export PATH=/home/jpfeiff/bin:$PATH
+export PATH=/home/jpfeiff/.opencode/bin:$PATH
+
+# Support colors in less
+export LESS_TERMCAP_mb=$(tput bold; tput setaf 1)
+export LESS_TERMCAP_md=$(tput bold; tput setaf 1)
+export LESS_TERMCAP_me=$(tput sgr0)
+export LESS_TERMCAP_se=$(tput sgr0)
+export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
+export LESS_TERMCAP_ue=$(tput sgr0)
+export LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 2)
+export LESS_TERMCAP_mr=$(tput rev)
+export LESS_TERMCAP_mh=$(tput dim)
+export LESS_TERMCAP_ZN=$(tput ssubm)
+export LESS_TERMCAP_ZV=$(tput rsubm)
+export LESS_TERMCAP_ZO=$(tput ssupm)
+export LESS_TERMCAP_ZW=$(tput rsupm)
+
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv)"
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
@@ -140,11 +160,28 @@ function take {
 	cd $1
 }
 
-# Quick Notes
-function note {
-	echo "date: $(date)" >> $HOME/qnotes.txt
-	echo "$@" >> $HOME/qnotes.txt
-	echo "" >> $HOME/qnotes.txt
+# Extracts any archive(s) (if unp isn't installed)
+extract() {
+	for archive in "$@"; do
+		if [ -f "$archive" ]; then
+			case $archive in
+			*.tar.bz2) tar xvjf "$archive" ;;
+			*.tar.gz) tar xvzf "$archive" ;;
+			*.bz2) bunzip2 "$archive" ;;
+			*.rar) rar x "$archive" ;;
+			*.gz) gunzip "$archive" ;;
+			*.tar) tar xvf "$archive" ;;
+			*.tbz2) tar xvjf "$archive" ;;
+			*.tgz) tar xvzf "$archive" ;;
+			*.zip) unzip "$archive" ;;
+			*.Z) uncompress "$archive" ;;
+			*.7z) 7z x "$archive" ;;
+			*) echo "don't know how to extract '$archive'..." ;;
+			esac
+		else
+			echo "'$archive' is not a valid file!"
+		fi
+	done
 }
 
 ############################################
@@ -152,9 +189,10 @@ function note {
 ############################################
 
 # Script Alias
-alias mvp="mvp.sh"
-alias cpp="cpp.sh"
-alias wis="whereis.sh"
+alias note="bash ~/bin/note.sh"
+alias mvp="bash ~/bin/mvp.sh"
+alias cpp="bash ~/bin/cpp.sh"
+alias wis="bash ~/bin/whereis.sh"
 
 # Changing "ls" to "eza"
 alias ls='eza -al --color=always --group-directories-first'
@@ -180,7 +218,9 @@ alias ironops="ssh -i ~/.ssh/ssh-key-2026-02-23.key ubuntu@207.211.178.116"
 
 # Git
 alias gitcl="git clone"
-alias gitad="git add ."
+alias gitst='git status'
+alias gitlog='git log'
+alias gitad="git add . --all"
 alias gitcom="git commit -m"
 alias gitpu="git push -u origin main"
 
