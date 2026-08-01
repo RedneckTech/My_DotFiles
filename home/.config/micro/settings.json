@@ -1,0 +1,4 @@
+{
+    "colorscheme": "gruvbox",
+    "lsp.server": "python=pylsp,shell=bash-language-server start,zig=zls,c=clangd,c++=clangd,lua=lua-language-server"
+}

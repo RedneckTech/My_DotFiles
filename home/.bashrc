@@ -123,6 +123,7 @@ fi
 export PAGER='less'
 
 export PATH=/home/jpfeiff/bin:$PATH
+export PATH=/home/jpfeiff/.local/bin:$PATH
 export PATH=/home/jpfeiff/.opencode/bin:$PATH
 
 # Support colors in less
