@@ -235,7 +235,7 @@ alias gitst='git status'
 alias gitlog='git log'
 alias gitad="git add . --all"
 alias gitcom="git commit -m"
-alias gitpu="git push -u origin"
+alias gitpu="git push -u origin HEAD"
 
 # ps
 alias psa="ps auxf"
