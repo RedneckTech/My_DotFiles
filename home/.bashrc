@@ -4,8 +4,8 @@
 
 # If not running interactively, don't do anything
 case $- in
-    *i*) ;;
-      *) return;;
+*i*) ;;
+*) return ;;
 esac
 
 # don't put duplicate lines or lines starting with space in the history.
@@ -37,7 +37,7 @@ fi
 
 # set a fancy prompt (non-color, unless we know we "want" color)
 case "$TERM" in
-    xterm-color|*-256color) color_prompt=yes;;
+xterm-color | *-256color) color_prompt=yes ;;
 esac
 
 # uncomment for a colored prompt, if the terminal has the capability; turned
@@ -47,12 +47,12 @@ esac
 
 if [ -n "$force_color_prompt" ]; then
     if [ -x /usr/bin/tput ] && tput setaf 1 >&/dev/null; then
-	# We have color support; assume it's compliant with Ecma-48
-	# (ISO/IEC-6429). (Lack of such support is extremely rare, and such
-	# a case would tend to support setf rather than setaf.)
-	color_prompt=yes
+        # We have color support; assume it's compliant with Ecma-48
+        # (ISO/IEC-6429). (Lack of such support is extremely rare, and such
+        # a case would tend to support setf rather than setaf.)
+        color_prompt=yes
     else
-	color_prompt=
+        color_prompt=
     fi
 fi
 
@@ -65,11 +65,10 @@ unset color_prompt force_color_prompt
 
 # If this is an xterm set the title to user@host:dir
 case "$TERM" in
-xterm*|rxvt*)
+xterm* | rxvt*)
     PS1="\[\e]0;${debian_chroot:+($debian_chroot)}\u@\h: \w\a\]$PS1"
     ;;
-*)
-    ;;
+*) ;;
 esac
 
 # enable color support of ls and also add handy aliases
@@ -109,11 +108,11 @@ fi
 # this, if it's already enabled in /etc/bash.bashrc and /etc/profile
 # sources /etc/bash.bashrc).
 if ! shopt -oq posix; then
-  if [ -f /usr/share/bash-completion/bash_completion ]; then
-    . /usr/share/bash-completion/bash_completion
-  elif [ -f /etc/bash_completion ]; then
-    . /etc/bash_completion
-  fi
+    if [ -f /usr/share/bash-completion/bash_completion ]; then
+        . /usr/share/bash-completion/bash_completion
+    elif [ -f /etc/bash_completion ]; then
+        . /etc/bash_completion
+    fi
 fi
 
 #############################################
@@ -127,13 +126,27 @@ export PATH=/home/jpfeiff/.local/bin:$PATH
 export PATH=/home/jpfeiff/.opencode/bin:$PATH
 
 # Support colors in less
-export LESS_TERMCAP_mb=$(tput bold; tput setaf 1)
-export LESS_TERMCAP_md=$(tput bold; tput setaf 1)
+export LESS_TERMCAP_mb=$(
+    tput bold
+    tput setaf 1
+)
+export LESS_TERMCAP_md=$(
+    tput bold
+    tput setaf 1
+)
 export LESS_TERMCAP_me=$(tput sgr0)
 export LESS_TERMCAP_se=$(tput sgr0)
-export LESS_TERMCAP_so=$(tput bold; tput setaf 3; tput setab 4)
+export LESS_TERMCAP_so=$(
+    tput bold
+    tput setaf 3
+    tput setab 4
+)
 export LESS_TERMCAP_ue=$(tput sgr0)
-export LESS_TERMCAP_us=$(tput smul; tput bold; tput setaf 2)
+export LESS_TERMCAP_us=$(
+    tput smul
+    tput bold
+    tput setaf 2
+)
 export LESS_TERMCAP_mr=$(tput rev)
 export LESS_TERMCAP_mh=$(tput dim)
 export LESS_TERMCAP_ZN=$(tput ssubm)
@@ -147,9 +160,8 @@ eval "$(zoxide init bash)"
 
 # User created run calls
 if [ -f /home/linuxbrew/.linuxbrew/bin/fastfetch ]; then
-	fastfetch
+    fastfetch
 fi
-
 
 #############################################
 #Costom Functions
@@ -157,32 +169,32 @@ fi
 
 # Creating Directories
 function take {
-	mkdir -p $1
-	cd $1
+    mkdir -p $1
+    cd $1
 }
 
 # Extracts any archive(s) (if unp isn't installed)
 extract() {
-	for archive in "$@"; do
-		if [ -f "$archive" ]; then
-			case $archive in
-			*.tar.bz2) tar xvjf "$archive" ;;
-			*.tar.gz) tar xvzf "$archive" ;;
-			*.bz2) bunzip2 "$archive" ;;
-			*.rar) rar x "$archive" ;;
-			*.gz) gunzip "$archive" ;;
-			*.tar) tar xvf "$archive" ;;
-			*.tbz2) tar xvjf "$archive" ;;
-			*.tgz) tar xvzf "$archive" ;;
-			*.zip) unzip "$archive" ;;
-			*.Z) uncompress "$archive" ;;
-			*.7z) 7z x "$archive" ;;
-			*) echo "don't know how to extract '$archive'..." ;;
-			esac
-		else
-			echo "'$archive' is not a valid file!"
-		fi
-	done
+    for archive in "$@"; do
+        if [ -f "$archive" ]; then
+            case $archive in
+            *.tar.bz2) tar xvjf "$archive" ;;
+            *.tar.gz) tar xvzf "$archive" ;;
+            *.bz2) bunzip2 "$archive" ;;
+            *.rar) rar x "$archive" ;;
+            *.gz) gunzip "$archive" ;;
+            *.tar) tar xvf "$archive" ;;
+            *.tbz2) tar xvjf "$archive" ;;
+            *.tgz) tar xvzf "$archive" ;;
+            *.zip) unzip "$archive" ;;
+            *.Z) uncompress "$archive" ;;
+            *.7z) 7z x "$archive" ;;
+            *) echo "don't know how to extract '$archive'..." ;;
+            esac
+        else
+            echo "'$archive' is not a valid file!"
+        fi
+    done
 }
 
 ############################################
@@ -223,7 +235,7 @@ alias gitst='git status'
 alias gitlog='git log'
 alias gitad="git add . --all"
 alias gitcom="git commit -m"
-alias gitpu="git push -u origin main"
+alias gitpu="git push -u origin"
 
 # ps
 alias psa="ps auxf"
