@@ -2,3 +2,6 @@
 # Micro generated state
 home/.config/micro/backups/
 home/.config/micro/buffers/
+
+# OpenCode generated dependencies
+home/.config/opencode/node_modules/
