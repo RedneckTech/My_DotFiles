@@ -26,6 +26,32 @@ confirm() {
     [[ "$reply" =~ ^([yY]|[yY][eE][sS])$ ]]
 }
 
+choose_operation() {
+    local choice
+
+    while true; do
+        echo
+        echo "What would you like to do?"
+        echo "  1) Stow and commit/push (full sync)"
+        echo "  2) Stow only"
+        echo "  3) Commit/push only"
+        echo
+        read -r -p "Select [1/2/3]: " choice || return 1
+
+        case "$choice" in
+            1) OPERATION="all" ;;
+            2) OPERATION="stow" ;;
+            3) OPERATION="git" ;;
+            *)
+                echo "Invalid selection. Please choose 1, 2, or 3."
+                continue
+                ;;
+        esac
+
+        break
+    done
+}
+
 run_stow_capture() {
     # Store the result in STOW_OUTPUT and STOW_STATUS without letting
     # `set -e` terminate the script before we can inspect conflicts.
@@ -159,8 +185,22 @@ done
 [[ -d "${STOW_DIR}/${PACKAGE}" ]] ||
     error "Stow package not found: ${STOW_DIR}/${PACKAGE}"
 
-# First perform a plain stow preview. This detects regular-file conflicts
-# without the duplicate warnings produced by a restow (-R) preview.
+choose_operation
+
+case "$OPERATION" in
+    all)
+        echo "This will run Stow, then commit and push any changes."
+        ;;
+    stow)
+        echo "This will run Stow only. No Git commit or push will happen."
+        ;;
+    git)
+        echo "This will commit and push only. Stow will not be run."
+        ;;
+esac
+
+if [[ "$OPERATION" == "all" || "$OPERATION" == "stow" ]]; then
+echo
 echo "Checking for existing-file conflicts..."
 echo
 
@@ -198,7 +238,7 @@ fi
 
 echo
 if ! confirm "Apply these final Stow changes?"; then
-    echo "Cancelled. The Git update and push were not run."
+    echo "Cancelled. No Stow changes were applied."
     exit 0
 fi
 
@@ -211,6 +251,10 @@ stow \
     -d "$STOW_DIR" \
     -t "$TARGET_DIR" \
     "$PACKAGE"
+
+fi
+
+if [[ "$OPERATION" == "all" || "$OPERATION" == "git" ]]; then
 
 cd "$REPO_DIR"
 
@@ -273,5 +317,17 @@ echo "Pushing ${branch} to GitHub over SSH..."
 
 git push --set-upstream "$REMOTE_NAME" "$branch"
 
+fi
+
 echo
-echo "Dotfiles updated and pushed successfully."
+case "$OPERATION" in
+    all)
+        echo "Dotfiles updated and pushed successfully."
+        ;;
+    stow)
+        echo "Stow changes applied successfully."
+        ;;
+    git)
+        echo "Changes committed and pushed successfully."
+        ;;
+esac
