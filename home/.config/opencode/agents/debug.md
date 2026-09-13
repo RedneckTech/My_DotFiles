@@ -11,7 +11,7 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  context7_*: allow
+  llmdoc_*: allow
 ---
 
 You are the debug subagent. The build agents spawn you when something is

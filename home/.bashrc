@@ -260,3 +260,6 @@ alias grep='grep --color=auto'
 alias ee="exit"
 # swapoff
 alias swapoff="sudo swapoff -a"
+
+# OpenCode secrets (MCP tokens etc.)
+[ -f "$HOME/.user_config/home/.config/opencode/.env" ] && . "$HOME/.user_config/home/.config/opencode/.env"

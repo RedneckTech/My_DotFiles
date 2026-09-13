@@ -11,7 +11,7 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  context7_*: allow
+  llmdoc_*: allow
 ---
 
 You are the review subagent: an independent code reviewer that the build

@@ -10,7 +10,7 @@ permission:
   websearch: allow
   task: allow
   skill: allow
-  context7_*: allow
+  llmdoc_*: allow
 ---
 
 You are the docs agent. You create and maintain project documentation that

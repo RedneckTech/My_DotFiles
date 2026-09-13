@@ -12,8 +12,8 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  context7_*: allow
-  jcodemunch-mcp_*: allow
+  llmdoc_*: allow
+  codegraph_*: allow
 ---
 
 You are ScriptDev, the shell-scripting agent. You create and maintain shell

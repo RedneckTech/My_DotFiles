@@ -1,32 +1,40 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "plugin": ["superpowers@git+https://github.com/obra/superpowers.git"],
   "mcp": {
     "filesystem-mcp": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-filesystem"],
-      "enabled": false
+      "command": ["/home/jpfeiff/.local/bin/mcp-filesystem-server", "/home/jpfeiff", "/tmp", "/media/jpfeiff"],
+      "enabled": true
     },
-    "context7": {
-      "type": "remote",
-      "url": "https://mcp.context7.com/mcp",
-      "enabled": false
-    },
-    "jcodemunch-mcp": {
+    "llmdoc": {
       "type": "local",
-      "command": ["<unknown>"],
-      "enabled": false
+      "command": ["/home/jpfeiff/.local/bin/llmdoc"],
+      "environment": {
+        "LLMDOC_SOURCES": "fastapi:http://127.0.0.1:8099/fastapi.llms.txt,python:http://127.0.0.1:8099/python.llms.txt,flask:http://127.0.0.1:8099/flask.llms.txt,bash:http://127.0.0.1:8099/bash.llms.txt,zig:https://ziglang.org/documentation/master/",
+        "LLMDOC_DB_PATH": "/home/jpfeiff/.local/share/llmdoc/index.db"
+      },
+      "enabled": true
+    },
+    "codegraph": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/@colbymchenry/codegraph/npm-shim.js", "serve", "--mcp"],
+      "enabled": true
     },
     "github-mcp": {
       "type": "local",
-      "command": ["npx", "-y", "@modelcontextprotocol/server-github"],
-      "enabled": false
+      "command": ["/home/jpfeiff/.local/bin/github-mcp-server", "stdio"],
+      "environment": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}"
+      },
+      "enabled": true
     }
   },
   "permission": {
     "filesystem-mcp_*": "deny",
-    "context7_*": "deny",
-    "jcodemunch-mcp_*": "deny",
-    "github-mcp_*": "deny"
+    "llmdoc_*": "deny",
+    "github-mcp_*": "deny",
+    "codegraph_*": "deny"
   },
   "references": {
     "3270manuals": {
@@ -38,13 +46,13 @@
     "plan": {
       "permission": {
         "filesystem-mcp_*": "allow",
-        "context7_*": "allow"
+        "llmdoc_*": "allow"
       }
     },
     "build": {
       "permission": {
         "filesystem-mcp_*": "allow",
-        "context7_*": "allow"
+        "llmdoc_*": "allow"
       }
     }
   }

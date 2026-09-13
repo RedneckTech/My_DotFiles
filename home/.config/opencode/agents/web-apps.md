@@ -11,8 +11,8 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  context7_*: allow
-  jcodemunch-mcp_*: allow
+  llmdoc_*: allow
+  codegraph_*: allow
 ---
 
 You are the web-apps agent. You build and maintain web applications in
