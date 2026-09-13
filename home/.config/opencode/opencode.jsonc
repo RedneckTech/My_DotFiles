@@ -11,10 +11,11 @@
       "type": "local",
       "command": ["/home/jpfeiff/.local/bin/llmdoc"],
       "environment": {
-        "LLMDOC_SOURCES": "fastapi:http://127.0.0.1:8099/fastapi.llms.txt,python:http://127.0.0.1:8099/python.llms.txt,flask:http://127.0.0.1:8099/flask.llms.txt,bash:http://127.0.0.1:8099/bash.llms.txt,zig:https://ziglang.org/documentation/master/",
-        "LLMDOC_DB_PATH": "/home/jpfeiff/.local/share/llmdoc/index.db"
+        "LLMDOC_SOURCES": "fastapi:http://127.0.0.1:8099/fastapi.llms.txt,flask:http://127.0.0.1:8099/flask.llms.txt,bash:http://127.0.0.1:8099/bash.llms.txt,zig:https://ziglang.org/documentation/master/",
+        "LLMDOC_DB_PATH": "/home/jpfeiff/.local/share/llmdoc/index.db",
+        "LLMDOC_SKIP_STARTUP_REFRESH": "true"
       },
-      "enabled": true
+      "enabled": false
     },
     "codegraph": {
       "type": "local",
