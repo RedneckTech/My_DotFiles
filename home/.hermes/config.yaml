@@ -49,7 +49,7 @@ compression:
   max_attempts: 3
   codex_app_server_auto: native
   codex_responses_native: false
-  codex_responses_compact_threshold: null
+  codex_responses_compact_threshold:
   protect_first_n: 3
   idle_compact_after_seconds: 0
   hygiene_max_turn_hold_seconds: 10
@@ -64,7 +64,7 @@ memory:
   memory_char_limit: 2200
   user_char_limit: 1375
   nudge_interval: 10
-max_concurrent_sessions: null
+max_concurrent_sessions:
 group_sessions_per_user: true
 streaming:
   enabled: false
@@ -78,7 +78,7 @@ agent:
   service_tier: ''
   fast_auto_seconds: 60
   personalities: {}
-gateway: null
+gateway:
 platform_toolsets:
   cli:
     - hermes-cli
@@ -142,3 +142,5 @@ onboarding:
   seen:
     tool_progress_prompt: true
     busy_input_prompt: true
+approvals:
+  destructive_slash_confirm: false

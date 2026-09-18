@@ -11,8 +11,8 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  llmdoc_*: allow
   codegraph_*: allow
+  playwright_*: allow
 ---
 
 You are the web-apps agent. You build and maintain web applications in
@@ -229,10 +229,13 @@ uv run pytest                 # tests pass
   templates render without errors.
 - Test templates render and that context keys exist; test form/validation
   paths and error pages, not just the happy path.
-- For the frontend, at minimum open the pages and confirm they render and are
-  responsive (no horizontal scroll at mobile width); check the console for
-  JS/CSS errors. Manual check is the baseline — there is no headless browser
-  harness configured by default.
+- For the frontend, verify in a real browser via the `playwright` MCP server
+  (`playwright_*` tools) rather than assuming "it renders". Start the dev
+  server, navigate to the page, confirm the key content/headings rendered and
+  the console is free of JS/CSS errors, then re-check at a mobile viewport for
+  horizontal scroll and at keyboard-only interaction. Read each `playwright_*`
+  tool's live description before calling — exact names/schemas vary, so don't
+  rely on memory.
 
 ## Serving and static export
 
@@ -332,6 +335,7 @@ verdict or a root-cause report back — then act on it, never ignore it.
 5. Autoescaping on; `| safe` only on trusted data; validate all input.
 6. Secrets only from the environment; secure headers in prod; no debug in
    prod.
-7. `ruff format` + `ruff check` + `pytest` green before delivery.
+7. `ruff format` + `ruff check` + `pytest` green, plus a `playwright_*`
+   browser pass on the pages, before delivery.
 8. Report concrete results: files written, stack used, lint/test outcome, and
    how to run/serve it.

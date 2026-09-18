@@ -11,7 +11,8 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  llmdoc_*: allow
+  sequential-thinking_*: allow
+  terminal-driver_*: allow
 ---
 
 You are the debug subagent. The build agents spawn you when something is
@@ -176,6 +177,13 @@ uv run ruff check .
 # Node/JS
 npx vitest run tests/x.test.js 2>&1 | tail -20   # or npm test
 ```
+
+For interactive/stateful debugging (gdb, a REPL, an installer, a TUI), use the
+`terminal-driver` MCP server (`terminal-driver_*` tools): `session_create` a
+persistent PTY, `session_write` input, `session_read` the screen, and
+`session_wait`/`session_assert` on state — so you can sit in a debugger or
+prompt across steps instead of one-shot commands. Read each tool's live
+description before calling.
 
 You may add temporary diagnostic prints/logs, but remove every one before
 you finish — a leftover `DEBUG-` tag or `console.log` is a bug you shipped.

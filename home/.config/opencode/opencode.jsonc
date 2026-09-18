@@ -29,13 +29,64 @@
         "GITHUB_PERSONAL_ACCESS_TOKEN": "{env:GITHUB_PERSONAL_ACCESS_TOKEN}"
       },
       "enabled": true
+    },
+    "playwright": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/@playwright/mcp/cli.js", "--headless", "--isolated"],
+      "enabled": true
+    },
+    "markitdown": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/markitdown-mcp"],
+      "enabled": true
+    },
+    "sequential-thinking": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js"],
+      "enabled": true
+    },
+    "memory-docs": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/@modelcontextprotocol/server-memory/dist/index.js"],
+      "environment": {
+        "MEMORY_FILE_PATH": "/home/jpfeiff/.local/share/opencode-memory/docs.jsonl"
+      },
+      "enabled": true
+    },
+    "memory-3270dev": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/@modelcontextprotocol/server-memory/dist/index.js"],
+      "environment": {
+        "MEMORY_FILE_PATH": "/home/jpfeiff/.local/share/opencode-memory/3270dev.jsonl"
+      },
+      "enabled": true
+    },
+    "memory-gendev": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/@modelcontextprotocol/server-memory/dist/index.js"],
+      "environment": {
+        "MEMORY_FILE_PATH": "/home/jpfeiff/.local/share/opencode-memory/gendev.jsonl"
+      },
+      "enabled": true
+    },
+    "terminal-driver": {
+      "type": "local",
+      "command": ["/home/jpfeiff/.local/bin/node", "/home/jpfeiff/.local/lib/node_modules/terminal-driver-mcp/dist/index.js"],
+      "enabled": true
     }
   },
   "permission": {
     "filesystem-mcp_*": "deny",
     "llmdoc_*": "deny",
     "github-mcp_*": "deny",
-    "codegraph_*": "deny"
+    "codegraph_*": "deny",
+    "playwright_*": "deny",
+    "markitdown_*": "deny",
+    "sequential-thinking_*": "deny",
+    "memory-docs_*": "deny",
+    "memory-3270dev_*": "deny",
+    "memory-gendev_*": "deny",
+    "terminal-driver_*": "deny"
   },
   "references": {
     "3270manuals": {
@@ -47,13 +98,15 @@
     "plan": {
       "permission": {
         "filesystem-mcp_*": "allow",
-        "llmdoc_*": "allow"
+        "codegraph_*": "allow"
       }
     },
     "build": {
       "permission": {
         "filesystem-mcp_*": "allow",
-        "llmdoc_*": "allow"
+        "codegraph_*": "allow",
+        "playwright_*": "allow",
+        "terminal-driver_*": "allow"
       }
     }
   }

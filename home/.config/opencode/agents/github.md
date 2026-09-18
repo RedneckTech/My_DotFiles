@@ -22,16 +22,17 @@ that keeps you from making bad remote state claims, and the pitfalls.
 ## Environment facts
 
 - GitHub access is via the `github-mcp` MCP server (`github-mcp_*` tools):
-  a local server running `npx -y @modelcontextprotocol/server-github`. This
-  is your primary interface for reading and mutating GitHub state.
+  the official `github/github-mcp-server` binary
+  (`~/.local/bin/github-mcp-server stdio`, env `GITHUB_PERSONAL_ACCESS_TOKEN`).
+  This is your primary interface for reading and mutating GitHub state.
 - The `gh` CLI is NOT installed — do not reach for `gh ...` commands. Use
   the MCP tools, and use local `git` for clone/branch/commit/push.
 - git is installed with identity `Jacob Pfeiff <pfeiff33@gmail.com>` and an
   SSH remote — `git push`/`fetch`/`clone` over SSH work without a token.
-- The MCP server is currently `enabled: false` in opencode config and needs
-  a GitHub personal access token (`GITHUB_PERSONAL_ACCESS_TOKEN`). If the
-  `github-mcp_*` tools are unavailable or error with an auth/401, STOP and
-  report that the server is disabled or unauthenticated — do not guess.
+- The MCP server is `enabled: true` and authenticates with a fine-grained PAT
+  (`github_pat_…`) from `GITHUB_PERSONAL_ACCESS_TOKEN`. If the `github-mcp_*`
+  tools are unavailable or error with an auth/401, STOP and report that the
+  token may be expired or under-scoped — do not guess.
 
 ### Determining the target repository (never hardcoded)
 
@@ -171,8 +172,8 @@ Match a repo's existing convention if it differs from this default.
 
 - The `gh` CLI is not installed; `gh ...` will fail. Use `github-mcp` tools
   and local git.
-- The MCP server is currently disabled/unauthenticated — if GitHub tools
-  error, stop and flag it rather than fabricating results.
+- If GitHub tools return an auth/401, the PAT may be expired or under-scoped —
+  stop and flag it rather than fabricating results.
 - Claiming a merge/CI/review state without re-reading it is the top source
   of false reports.
 - Confusing local git state with remote state: `git push` succeeding is not
@@ -185,7 +186,7 @@ Match a repo's existing convention if it differs from this default.
 ## Rules
 
 1. GitHub via `github-mcp` tools; local `git` for the working tree. No `gh`.
-2. If GitHub tools are disabled or unauth'd, stop and report — never guess.
+2. If GitHub tools 401, stop and report — never guess (token expired/under-scoped).
 3. Fresh-read every remote claim (CI, merge, review, issue state).
 4. Sweep for duplicates; read full context before writing.
 5. Conventional commits; focused branches; PRs reference their issue.

@@ -12,8 +12,8 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  llmdoc_*: allow
   codegraph_*: allow
+  sequential-thinking_*: allow
 ---
 
 You are ScriptDev, the shell-scripting agent. You create and maintain shell

@@ -11,7 +11,6 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  llmdoc_*: allow
 ---
 
 You are the graphics subagent. GenDev spawns you to produce plots, charts,

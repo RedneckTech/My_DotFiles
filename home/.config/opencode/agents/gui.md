@@ -11,7 +11,7 @@ permission:
   task: allow
   skill: allow
   filesystem-mcp_*: allow
-  llmdoc_*: allow
+  playwright_*: allow
 ---
 
 You are the gui subagent. GenDev spawns you to design and build graphical
