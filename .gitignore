@@ -5,3 +5,6 @@ home/.config/micro/buffers/
 
 # OpenCode generated dependencies
 home/.config/opencode/node_modules/
+
+# OpenCode secrets — keep out of git
+home/.config/opencode/.env
