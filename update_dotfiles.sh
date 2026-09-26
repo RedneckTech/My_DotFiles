@@ -5,9 +5,12 @@ set -Eeuo pipefail
 REPO_DIR="${HOME}/.user_config"
 STOW_DIR="${REPO_DIR}"
 TARGET_DIR="${HOME}"
+HOST_SHORT="$(hostname -s 2>/dev/null || hostname)"
 PACKAGES=(home)
-HOST_PACKAGE="host-$(hostname)"
-[[ -d "${STOW_DIR}/${HOST_PACKAGE}" ]] && PACKAGES+=("${HOST_PACKAGE}")
+HOST_PACKAGE="host-${HOST_SHORT}"
+HOST_PACKAGE_PRESENT=false
+[[ -d "${STOW_DIR}/${HOST_PACKAGE}" ]] && HOST_PACKAGE_PRESENT=true
+[[ "$HOST_PACKAGE_PRESENT" == true ]] && PACKAGES+=("${HOST_PACKAGE}")
 
 REMOTE_NAME="origin"
 REMOTE_URL="git@github.com:RedneckTech/My_DotFiles.git"
@@ -52,6 +55,29 @@ choose_operation() {
 
         break
     done
+}
+
+resolve_host_package() {
+    echo
+    echo "Host:          ${HOST_SHORT}"
+    echo "Host package:  ${HOST_PACKAGE}"
+    echo "Stow packages: ${PACKAGES[*]}"
+
+    [[ "$HOST_PACKAGE_PRESENT" == true ]] && return 0
+
+    echo
+    echo "No '${HOST_PACKAGE}' package exists for this machine yet."
+    echo "A host package holds machine-specific config (currently"
+    echo ".hermes/config.yaml)."
+    if confirm "Bootstrap '${HOST_PACKAGE}' from the live ~/.hermes/config.yaml?"; then
+        mkdir -p "${STOW_DIR}/${HOST_PACKAGE}/.hermes"
+        cp -a "${HOME}/.hermes/config.yaml" "${STOW_DIR}/${HOST_PACKAGE}/.hermes/config.yaml"
+        PACKAGES+=("${HOST_PACKAGE}")
+        HOST_PACKAGE_PRESENT=true
+        echo "Created ${HOST_PACKAGE}/.hermes/config.yaml."
+    else
+        echo "Continuing with the shared 'home' package only."
+    fi
 }
 
 run_stow_capture() {
@@ -192,6 +218,8 @@ done
 
 [[ -d "${STOW_DIR}/home" ]] ||
     error "Stow package 'home' not found: ${STOW_DIR}/home"
+
+resolve_host_package
 
 choose_operation
 
