@@ -11,10 +11,14 @@ symlinked into live locations. The repo is the source of truth.
 
 ## Layout
 
+GNU Stow packages: a shared `home/` baseline stowed by every machine, plus
+per-host packages for machine-specific config. `update_dotfiles.sh` stows
+`home` plus `host-$(hostname)` when that package exists.
+
 ```
 ~/.user_config/
   .git/                         # the repo itself
-  home/
+  home/                         # SHARED package (stowed by all machines)
     .bashrc
     .xbindkeysrc
     .claude/skills/             # Claude Code skills (4)
@@ -22,25 +26,33 @@ symlinked into live locations. The repo is the source of truth.
       alacritty/
       ghostty/
       micro/
-      opencode/                 # opencode.jsonc, agents/, .env, package.json
+      opencode/                 # opencode.jsonc, agents/, skills/, .env
       rofi/
       starship.toml
     .hermes/
-      config.yaml               # Hermes agent config
-      SOUL.md                   # Hermes personality
+      SOUL.md                   # Hermes personality (portable)
+  host-jacob-x570aorusultra/    # DESKTOP-only package
+    .hermes/
+      config.yaml               # desktop's Hermes config
+  host-jacob-82jw/              # LAPTOP-only package (empty for now)
 ```
+
+`.hermes/config.yaml` is Hermes-managed live state (it carries `_config_version`
+and is rewritten at runtime), so it is **per-host**, not shared. The laptop
+keeps its own copy as a regular file and does not stow it.
 
 ## Symlink map (repo -> live path)
 
-These are individual symlinks (hand-managed, not GNU Stow):
+These are individual-file symlinks managed by GNU Stow (`--no-folding`, so
+`~/.config/opencode/` stays a real directory that can also hold `node_modules`):
 
 | Live path | -> Target |
 |-----------|-----------|
 | `~/.bashrc` | `.user_config/home/.bashrc` |
 | `~/.xbindkeysrc` | `.user_config/home/.xbindkeysrc` |
 | `~/.config/starship.toml` | `../.user_config/home/.config/starship.toml` |
-| `~/.hermes/config.yaml` | `../.user_config/home/.hermes/config.yaml` |
 | `~/.hermes/SOUL.md` | `../.user_config/home/.hermes/SOUL.md` |
+| `~/.hermes/config.yaml` | `../.user_config/host-jacob-x570aorusultra/.hermes/config.yaml` (desktop only) |
 | `~/.config/opencode/opencode.jsonc` | `../../.user_config/home/.config/opencode/opencode.jsonc` |
 | `~/.config/opencode/package.json` | `../../.user_config/home/.config/opencode/package.json` |
 | `~/.config/opencode/package-lock.json` | `../../.user_config/home/.config/opencode/package-lock.json` |

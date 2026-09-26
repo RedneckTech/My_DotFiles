@@ -5,54 +5,264 @@ set -Eeuo pipefail
 REPO_DIR="${HOME}/.user_config"
 STOW_DIR="${REPO_DIR}"
 TARGET_DIR="${HOME}"
-PACKAGE="home"
+PACKAGES=(home)
+HOST_PACKAGE="host-$(hostname)"
+[[ -d "${STOW_DIR}/${HOST_PACKAGE}" ]] && PACKAGES+=("${HOST_PACKAGE}")
 
 REMOTE_NAME="origin"
 REMOTE_URL="git@github.com:RedneckTech/My_DotFiles.git"
+
+# Backups made before --adopt are stored outside the Git repository.
+STATE_DIR="${XDG_STATE_HOME:-${HOME}/.local/state}/dotfiles-stow"
 
 error() {
     printf 'Error: %s\n' "$*" >&2
     exit 1
 }
 
-for command_name in stow git; do
+confirm() {
+    local prompt="$1"
+    local reply
+
+    read -r -p "${prompt} [y/N] " reply || return 1
+    [[ "$reply" =~ ^([yY]|[yY][eE][sS])$ ]]
+}
+
+choose_operation() {
+    local choice
+
+    while true; do
+        echo
+        echo "What would you like to do?"
+        echo "  1) Stow and commit/push (full sync)"
+        echo "  2) Stow only"
+        echo "  3) Commit/push only"
+        echo
+        read -r -p "Select [1/2/3]: " choice || return 1
+
+        case "$choice" in
+            1) OPERATION="all" ;;
+            2) OPERATION="stow" ;;
+            3) OPERATION="git" ;;
+            *)
+                echo "Invalid selection. Please choose 1, 2, or 3."
+                continue
+                ;;
+        esac
+
+        break
+    done
+}
+
+run_stow_capture() {
+    # Store the result in STOW_OUTPUT and STOW_STATUS without letting
+    # `set -e` terminate the script before we can inspect conflicts.
+    set +e
+    STOW_OUTPUT="$(stow "$@" 2>&1)"
+    STOW_STATUS=$?
+    set -e
+}
+
+backup_item() {
+    local source_path="$1"
+    local backup_root="$2"
+    local relative_path="$3"
+    local destination_path="${backup_root}/${relative_path}"
+
+    if [[ -e "$source_path" || -L "$source_path" ]]; then
+        mkdir -p "$(dirname "$destination_path")"
+        cp -a -- "$source_path" "$destination_path"
+    fi
+}
+
+handle_stow_conflicts() {
+    local -a conflicts=()
+    local relative_path
+    local backup_dir
+    local target_path
+    local package_path
+
+    mapfile -t conflicts < <(
+        printf '%s\n' "$STOW_OUTPUT" |
+            sed -nE \
+                's/^[[:space:]]*\*[[:space:]]+existing target is neither a link nor a directory:[[:space:]]+//p' |
+            sort -u
+    )
+
+    if (( ${#conflicts[@]} == 0 )); then
+        printf '%s\n' "$STOW_OUTPUT" >&2
+        error "Stow failed with a conflict type this script cannot safely adopt automatically."
+    fi
+
+    echo
+    echo "Stow found ${#conflicts[@]} existing regular file(s) that block linking:"
+    printf '  %s\n' "${conflicts[@]}"
+
+    echo
+    echo "Adopting means the existing files in your home directory become"
+    echo "the versions stored in the dotfiles repository. The previous"
+    echo "target and repository versions will both be backed up first."
+
+    if ! confirm "Back up and adopt these files into the Stow package?"; then
+        echo "Cancelled. No files were adopted."
+        exit 0
+    fi
+
+    backup_dir="${STATE_DIR}/backups/$(date '+%Y%m%d-%H%M%S')"
+    mkdir -p "${backup_dir}/target" "${backup_dir}/package"
+
+    # Save the current Git state too, so uncommitted repository edits can
+    # be reconstructed even if --adopt replaces a package-side file.
+    git -C "$REPO_DIR" status --short > "${backup_dir}/git-status.txt" || true
+    git -C "$REPO_DIR" diff > "${backup_dir}/git-unstaged.patch" || true
+    git -C "$REPO_DIR" diff --cached > "${backup_dir}/git-staged.patch" || true
+
+    for relative_path in "${conflicts[@]}"; do
+        target_path="${TARGET_DIR}/${relative_path}"
+        package_path=""
+        for pkg in "${PACKAGES[@]}"; do
+            if [[ -e "${STOW_DIR}/${pkg}/${relative_path}" ]]; then
+                package_path="${STOW_DIR}/${pkg}/${relative_path}"
+                break
+            fi
+        done
+
+        backup_item "$target_path" "${backup_dir}/target" "$relative_path"
+        backup_item "$package_path" "${backup_dir}/package" "$relative_path"
+    done
+
+    printf '%s\n' "${conflicts[@]}" > "${backup_dir}/conflicts.txt"
+
+    echo
+    echo "Backup created at:"
+    echo "  ${backup_dir}"
+
+    echo
+    echo "Previewing adoption..."
+    echo
+
+    run_stow_capture \
+        -nv \
+        --adopt \
+        --no-folding \
+        -d "$STOW_DIR" \
+        -t "$TARGET_DIR" \
+        "${PACKAGES[@]}"
+
+    printf '%s\n' "$STOW_OUTPUT"
+
+    if (( STOW_STATUS != 0 )); then
+        error "The adoption preview failed. Nothing was adopted. Backup is at ${backup_dir}"
+    fi
+
+    echo
+    if ! confirm "Apply the adoption shown above?"; then
+        echo "Cancelled. Nothing was adopted. Backup remains at ${backup_dir}"
+        exit 0
+    fi
+
+    echo
+    echo "Adopting existing files into the Stow package..."
+
+    stow \
+        -v \
+        --adopt \
+        --no-folding \
+        -d "$STOW_DIR" \
+        -t "$TARGET_DIR" \
+        "${PACKAGES[@]}"
+
+    echo
+    echo "Adoption complete. Review these repository changes carefully:"
+    git -C "$REPO_DIR" status --short
+    echo
+    echo "Backup retained at: ${backup_dir}"
+}
+
+for command_name in stow git sed sort cp; do
     command -v "$command_name" >/dev/null 2>&1 ||
         error "'${command_name}' is not installed."
 done
 
-[[ -d "${REPO_DIR}" ]] ||
+[[ -d "$REPO_DIR" ]] ||
     error "Dotfiles directory not found: ${REPO_DIR}"
 
 [[ -d "${REPO_DIR}/.git" ]] ||
     error "${REPO_DIR} is not a Git repository."
 
-echo "Previewing Stow changes..."
-echo
+[[ -d "${STOW_DIR}/home" ]] ||
+    error "Stow package 'home' not found: ${STOW_DIR}/home"
 
-stow -nRv \
-    -d "$STOW_DIR" \
-    -t "$TARGET_DIR" \
-    "$PACKAGE"
+choose_operation
 
-echo
-read -r -p "Apply these Stow changes? [y/N] " approval
-
-case "$approval" in
-    y|Y|yes|YES|Yes)
+case "$OPERATION" in
+    all)
+        echo "This will run Stow, then commit and push any changes."
         ;;
-    *)
-        echo "Cancelled. No changes were applied."
-        exit 0
+    stow)
+        echo "This will run Stow only. No Git commit or push will happen."
+        ;;
+    git)
+        echo "This will commit and push only. Stow will not be run."
         ;;
 esac
+
+if [[ "$OPERATION" == "all" || "$OPERATION" == "stow" ]]; then
+echo
+echo "Checking for existing-file conflicts..."
+echo
+
+run_stow_capture \
+    -nv \
+    --no-folding \
+    -d "$STOW_DIR" \
+    -t "$TARGET_DIR" \
+    "${PACKAGES[@]}"
+
+if (( STOW_STATUS != 0 )); then
+    handle_stow_conflicts
+else
+    printf '%s\n' "$STOW_OUTPUT"
+fi
+
+# Now preview a full restow so stale links are removed and current links
+# are recreated from the package.
+echo
+echo "Previewing final Stow changes..."
+echo
+
+run_stow_capture \
+    -nRv \
+    --no-folding \
+    -d "$STOW_DIR" \
+    -t "$TARGET_DIR" \
+    "${PACKAGES[@]}"
+
+printf '%s\n' "$STOW_OUTPUT"
+
+if (( STOW_STATUS != 0 )); then
+    error "The final Stow preview failed. No final restow was applied."
+fi
+
+echo
+if ! confirm "Apply these final Stow changes?"; then
+    echo "Cancelled. No Stow changes were applied."
+    exit 0
+fi
 
 echo
 echo "Applying Stow changes..."
 
-stow -Rv \
+stow \
+    -Rv \
+    --no-folding \
     -d "$STOW_DIR" \
     -t "$TARGET_DIR" \
-    "$PACKAGE"
+    "${PACKAGES[@]}"
+
+fi
+
+if [[ "$OPERATION" == "all" || "$OPERATION" == "git" ]]; then
 
 cd "$REPO_DIR"
 
@@ -115,5 +325,17 @@ echo "Pushing ${branch} to GitHub over SSH..."
 
 git push --set-upstream "$REMOTE_NAME" "$branch"
 
+fi
+
 echo
-echo "Dotfiles updated and pushed successfully."
+case "$OPERATION" in
+    all)
+        echo "Dotfiles updated and pushed successfully."
+        ;;
+    stow)
+        echo "Stow changes applied successfully."
+        ;;
+    git)
+        echo "Changes committed and pushed successfully."
+        ;;
+esac
