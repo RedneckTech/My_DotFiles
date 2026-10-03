@@ -6,7 +6,7 @@ is leaner than the desktop — no flatpak, no cargo/go/rust/zig toolchains.)
 
 | Manager | Prefix / scope | Notes |
 |---------|---------------|-------|
-| **apt** (`dpkg`) | system | 85 manually-installed packages (base + user apps) |
+| **apt** (`dpkg`) | system | 79 manually-installed packages (base + user apps) |
 | **Homebrew** | `/home/linuxbrew/.linuxbrew` | only **starship** (`brew leaves`) |
 | **snap** | `/snap` | browser/mail + bases/runtimes |
 | **flatpak** | system | none installed |
@@ -53,9 +53,9 @@ The MCP-server entries (`github-mcp-server`, `mcp-*-server`, `codegraph`,
 
 ## Language servers (LSP) present
 
-Not audited on this laptop — the desktop had `bash-language-server`,
-`python3-pylsp`, `clangd`, `lua-language-server`, `zls`. Re-probe
-(`command -v …`) before relying on any of them here.
+None. Probed 2026-10-03: `bash-language-server`, `pylsp`/`python3-pylsp`,
+`clangd`, `lua-language-server`, and `zls` are all **absent** on this laptop
+(the desktop has them; re-install here if ever needed).
 
 ## Notable packages not on this laptop
 

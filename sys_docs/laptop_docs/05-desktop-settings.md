@@ -2,9 +2,9 @@
 
 ## Environment
 
-- **KDE Plasma 5.27.12** (Kubuntu `kubuntu-desktop`), Qt 5.15.13, KF 5.115.0.
-- **X11** session (not Wayland), WM **kwin**.
-- Single built-in panel **1920×1080 @ 165 Hz** (`DP-4`); external DisplayPort /
+- **KDE Plasma 6.6.6** (Kubuntu `kubuntu-desktop`), Qt 6.10.2, KF 6.24.0.
+- **Wayland** session (not X11), compositor **kwin_wayland**.
+- Single built-in panel **1920×1080 @ 165 Hz** (`eDP-1`); external DisplayPort /
   HDMI outputs present but disconnected.
 
 ## Keybindings
@@ -68,4 +68,4 @@ control+shift+q xbindkeys_show (the help overlay)
   [06-mcp-servers.md](./06-mcp-servers.md)).
 - `~/.cache/ms-playwright/` — Playwright Chromium used by the `playwright` MCP
   server.
-- `/media/jpfeiff/MassStorge` is the single secondary data drive (1.8 T).
+- `/run/media/jpfeiff/MassStorge` is the single secondary data drive (1.8 T).

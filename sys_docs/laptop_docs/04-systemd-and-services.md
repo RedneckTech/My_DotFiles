@@ -9,13 +9,19 @@ are present.
 | Unit | Purpose |
 |------|---------|
 | `pipewire.service` / `pipewire-pulse.service` / `wireplumber.service` | Audio stack |
-| `plasma-kcminit.service` / `plasma-ksmserver.service` / `plasma-plasmashell.service` | KDE Plasma session bring-up |
+| `plasma-kwin_wayland.service` | KWin Wayland compositor |
+| `plasma-plasmashell.service` / `plasma-ksmserver.service` / `plasma-kded6.service` | KDE Plasma session bring-up |
+| `plasma-powerdevil.service` / `plasma-kaccess.service` / `plasma-gmenudbusmenuproxy.service` / `plasma-xembedsniproxy.service` / `plasma-polkit-agent.service` | Plasma power / tray / a11y / portal helpers |
+| `xdg-desktop-portal.service` + `plasma-xdg-desktop-portal-kde.service` / `xdg-desktop-portal-gtk.service` | Wayland portal backends |
+| `xdg-document-portal.service` / `xdg-permission-store.service` | Wayland document + permission storage |
 | `kde-baloo.service` | KDE file-content indexer |
 | `app-xbindkeys@autostart.service` | Launches `xbindkeys` at login |
 | `app-org.kde.kdeconnect.daemon@autostart.service` | KDE Connect |
-| `gcr-ssh-agent.service` / `gnome-keyring-daemon.service` / `gpg-agent*` | Credential/key agents |
+| `gcr-ssh-agent.service` / `gnome-keyring-daemon.service` / `gpg-agent*` / `ssh-agent.service` | Credential/key agents |
 | `obex.service` | Bluetooth OBEX push |
-| `drkonqi-coredump-cleanup.service` | KCrash metadata cleanup |
+| `drkonqi-coredump-cleanup.service` / `drkonqi-sentry-postman.*` | KCrash metadata cleanup |
+| `mpris-proxy.service` | MPRIS Bluetooth media proxy |
+| `kunifiedpush-distributor.service` | KDE unified-push distributor |
 | `filter-chain.service` | PipeWire filter |
 
 No `llmdoc-serve.service` here — LLMDoc is disabled/not installed on this
@@ -31,8 +37,8 @@ laptop (see [06-mcp-servers.md](./06-mcp-servers.md) and
 | `bluetooth.service` | Bluetooth |
 | `power-profiles-daemon.service` | CPU power profiles (laptop) |
 | `switcheroo-control.service` | Hybrid-GPU switcheroo control (NVIDIA + iGPU) |
+| `nvidia-persistenced.service` / `nvidia-powerd.service` | NVIDIA persistence + power-management daemons |
 | `upower.service` | Battery/power device state |
-| `fwupd.service` | Firmware updates |
 | `ModemManager.service` | Mobile-broadband management |
 | `smartmontools.service` | SMART disk monitoring |
 | `cups.service` / `cups-browsed.service` | Printing |
@@ -53,6 +59,12 @@ timesyncd,hostnamed,journald,logind,udevd}`, `rsyslog`, `dbus`,
 
 ## Notes
 
+- The 26.04 upgrade moved the session from X11 to **Wayland**, so the Plasma
+  session is driven by `plasma-kwin_wayland.service` (+ the new `plasma-kded6`,
+  `xdg-desktop-portal`, and `xdg-document-portal` units) instead of the old
+  `kwin_x11` / `kded5` units.
+- `fwupd.service` is `static` (D-Bus/socket activated) and inactive at idle —
+  it is not always-on the way older installs showed it.
 - There is no `llmdoc-serve.service` on this laptop — the one service that
   bridged into the AI stack on the desktop is absent here because LLMDoc is
   disabled.

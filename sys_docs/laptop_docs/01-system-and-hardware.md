@@ -2,9 +2,10 @@
 
 ## OS
 
-- **Ubuntu 24.04.5 LTS** ("Noble Numbat"), ID `ubuntu`, ID_LIKE `debian`.
-- Kernel **6.8.0-142-generic** (`#142-Ubuntu SMP PREEMPT_DYNAMIC`, x86_64) — the
-  GA 6.8 kernel, **not** the HWE 7.0 kernel the desktop runs.
+- **Ubuntu 26.04.1 LTS** ("Resolute Raccoon"), ID `ubuntu`, ID_LIKE `debian`.
+- Kernel **7.0.0-38-generic** (`#38-Ubuntu SMP PREEMPT_DYNAMIC`, x86_64) — the
+  HWE 7.0 kernel, now the same series the desktop runs (upgraded from the
+  24.04 GA 6.8 kernel 2026-10-03).
 - Hostname: `jacob-82jw`. Machine ID `b5b6f10bdee745c5b4d46d0e657c9224`.
 - User: `jpfeiff`.
 
@@ -35,19 +36,26 @@
 ## Storage
 
 ```
-nvme1n1p1  vfat    300M   on /boot/efi
-nvme1n1p2  ext4    931G   on /                        (label kubuntu_2404)
-nvme0n1p1  ext4    1.8T   on /media/jpfeiff/MassStorge
+nvme0n1p1  vfat    300M   on /boot/efi
+nvme0n1p2  ext4    931G   on /                        (label kubuntu_2404 — stale)
+nvme1n1p1  ext4    1.8T   on /run/media/jpfeiff/MassStorge
 ```
 
-- Swap: **511 MiB**.
+- Swap: **512 MiB** (`/swapfile`).
+- `/tmp` is `tmpfs` (a new `/etc/fstab` line added by the upgrade).
 - Two NVMe drives only — no SATA/external bulk drives attached (the desktop has
   five; this laptop has the OS drive plus `MassStorge`).
+- The 26.04 upgrade **swapped the NVMe numbering**: the OS drive is now
+  `nvme0n1`, `MassStorge` is `nvme1n1`. `MassStorge` also moved mount points —
+  from `/media/jpfeiff/MassStorge` to `/run/media/jpfeiff/MassStorge` (newer
+  udisks2 mount policy; `/media/jpfeiff/MassStorge` no longer exists). The root
+  fs still carries the `kubuntu_2404` label — it was not renamed.
 
 ## Network
 
-- Ethernet: Realtek **RTL8111/8168/8411 Gigabit** (`eno1`, currently DOWN).
-- Wi-Fi: Realtek **RTL8852AE 802.11ax** (`wlp4s0`, UP — `10.86.127.5/24`).
+- Ethernet: Realtek **RTL8111/8168/8211/8411 Gigabit** (`eno1`, currently DOWN).
+- Wi-Fi: Realtek **RTL8852AE 802.11ax** (`wlp4s0`, UP — DHCP, currently
+  `10.46.86.5/24` plus IPv6 SLAAC addresses).
 
 ## Audio
 
@@ -60,8 +68,9 @@ nvme0n1p1  ext4    1.8T   on /media/jpfeiff/MassStorge
 
 ## Desktop environment
 
-- **KDE Plasma 5.27.12**, Qt 5.15.13, KDE Frameworks 5.115.0 — via
+- **KDE Plasma 6.6.6**, Qt 6.10.2, KDE Frameworks 6.24.0 — via
   `kubuntu-desktop`.
-- Session: **X11** (`XDG_SESSION_TYPE=x11`), window manager **kwin**.
-- Single built-in panel **1920×1080 @ 165 Hz** (`DP-4`); the external
+- Session: **Wayland** (`XDG_SESSION_TYPE=wayland`), compositor
+  **kwin_wayland** (the X11 `kwin_x11` binary is no longer installed).
+- Single built-in panel **1920×1080 @ 165 Hz** (`eDP-1`); the external
   DisplayPort/HDMI outputs are present but disconnected.

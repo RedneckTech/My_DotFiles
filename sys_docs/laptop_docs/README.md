@@ -3,7 +3,8 @@
 Documentation for **jacob-82jw**, the Lenovo Legion 5 15ACH6 laptop. Describes
 the OS, hardware, software, configs/dotfiles, systemd services, desktop
 settings, and the MCP server setup. Grounded in live
-`ls`/`systemctl`/`lspci`/package-manager output as of 2026-09-26.
+`ls`/`systemctl`/`lspci`/package-manager output as of 2026-10-03
+(post-upgrade to Ubuntu 26.04.1).
 
 | Doc | Covers |
 |-----|--------|
@@ -16,8 +17,8 @@ settings, and the MCP server setup. Grounded in live
 
 ## Quick facts
 
-- **OS**: Ubuntu 24.04.5 LTS, kernel 6.8.0-142-generic
-- **Desktop**: KDE Plasma 5.27.12 on **X11**, single 1920×1080@165 panel
+- **OS**: Ubuntu 26.04.1 LTS, kernel 7.0.0-38-generic
+- **Desktop**: KDE Plasma 6.6.6 on **Wayland**, single 1920×1080@165 panel
 - **Hardware**: Lenovo Legion 5 15ACH6 · AMD Ryzen 7 5800H (8C/16T) · 32 GB
   RAM · NVIDIA RTX 3050 Ti Mobile (4 GB)
 - **Shell**: bash · **Editor**: micro · **Terminals**: ghostty / yakuake /

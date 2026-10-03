@@ -26,13 +26,12 @@ other:
   editor/terminal/prompt configs, `.claude/skills/`, `.config/opencode/` with
   agents + skills, `starship.toml`, `.hermes/SOUL.md`).
 - `host-jacob-x570aorusultra/` — desktop-only (currently `.hermes/config.yaml`).
-- `host-jacob-82jw/` — laptop-only (doesn't exist yet; create it when this
-  laptop needs a machine-specific file).
+- `host-jacob-82jw/` — laptop-only (`.hermes/config.yaml`).
 
 `update_dotfiles.sh` now stows `home` plus `host-$(hostname)` when that package
-exists — on this laptop that resolves to just `home`. Stow uses `--no-folding`
-(individual files, so `~/.config/opencode/` stays a real dir that can also hold
-`node_modules/`).
+exists — on this laptop that resolves to `home` + `host-jacob-82jw`. Stow uses
+`--no-folding` (individual files, so `~/.config/opencode/` stays a real dir
+that can also hold `node_modules/`).
 
 Symlink reconciliation from this split:
 
@@ -48,10 +47,11 @@ Symlink reconciliation from this split:
   identical on both machines).
 - `~/.hermes/config.yaml` is **not** symlinked on this laptop: it's
   Hermes-managed live state (seeds `_config_version`, writes migrations, updates
-  fields at runtime — it grew 107535 → 107586 bytes in one session). It lives
-  in the desktop host package, not the shared `home/` package, so the laptop
-  keeps its own Hermes-managed copy as a regular file. Pre-split backups are
-  under `~/.local/state/dotfiles-stow/backups/`.
+  fields at runtime). A machine-specific copy is tracked in the laptop host
+  package `host-jacob-82jw/.hermes/config.yaml`, but the live file in `~` is a
+  regular file, not a symlink into it — the laptop keeps its own
+  Hermes-managed copy. Pre-split backups are under
+  `~/.local/state/dotfiles-stow/backups/`.
 
 ### `.gitignore`
 
