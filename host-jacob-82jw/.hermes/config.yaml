@@ -7,7 +7,7 @@
 # Schema version of this file. The installers copy it to seed config.yaml, and
 # `hermes update` uses it to know which one-time migrations the file already
 # has. Hermes manages it: do not copy it into another config.
-_config_version: 46
+_config_version: 49
 
 # =============================================================================
 # Database Configuration
@@ -391,10 +391,6 @@ compression:
   # bounding large-window sessions while lower proportional triggers still win
   # whenever they fall below the cap. The cap survives model switches and fallbacks.
   # Set null to restore ratio-only behavior.
-  threshold_tokens: 256000
-
-  # Existing Codex gpt-5.5 behavior: raise Hermes' compaction trigger to 85%
-  # for the ChatGPT Codex OAuth route. Set false to opt back down to threshold.
   codex_gpt55_autoraise: true
 
   # Fraction of the threshold to preserve as recent tail (default: 0.20 = 20%)
@@ -848,6 +844,7 @@ skills:
 # =============================================================================
 # Agent Behavior
 # =============================================================================
+  create_dir: ~/.user_config/skills
 agent:
   # Maximum tool-calling iterations per conversation (default: 500)
   # Higher = more room for complex tasks, but costs more tokens
@@ -998,7 +995,6 @@ agent:
   #   "openai/gpt-5": "low"
   #   "claude-opus-4.6": "high"           # bare model name also works
   #   "deepseek/deepseek-v4-pro": "xhigh" # dots and dashes are interchangeable
-  reasoning_overrides: {}
 
   # Fast mode (OpenAI Priority Processing / xAI Grok 4.6 / Anthropic Fast Mode
   # on Opus 4.8+). Premium pricing; only sent to first-party endpoints.
@@ -2000,3 +1996,5 @@ updates:
 onboarding:
   seen:
     tool_progress_prompt: true
+approvals:
+  destructive_slash_confirm: false
