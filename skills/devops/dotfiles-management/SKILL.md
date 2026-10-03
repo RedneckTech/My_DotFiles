@@ -22,6 +22,24 @@ is the source of truth. It is split into a shared `home/` package (stowed by
 every machine) plus per-host `host-<hostname>/` packages for machine-specific
 files; stow links the packages into `~`.
 
+## Agent-created skills (shared `skills/`)
+
+The repo's top-level `skills/` dir is the shared home for Hermes agent-created
+(self-improving) skills — the ones NOT in Hermes's bundled catalog. It is
+git-tracked but NOT stowed; each host points Hermes at it with:
+
+    hermes config set skills.create_dir '~/.user_config/skills'
+
+New skills the agent writes land here and are scanned alongside
+`~/.hermes/skills/`; edits to existing skills happen in place. Sync the usual
+way: commit + push after a session, `git pull` on the other host.
+
+Caveats: bundled skills stay in `~/.hermes/skills/` (seeded by `hermes update`).
+Local `~/.hermes/skills/` takes precedence over `skills.create_dir`, so a skill
+present in both places shadows the shared copy — remove the local duplicate when
+a skill moves into `skills/`. Never commit `~/.hermes/skills/` runtime state
+(`.curator_ledger.jsonl`, `.usage.json`, `.locks/`, `.bundled_manifest`).
+
 ## Core command
 
 ```
