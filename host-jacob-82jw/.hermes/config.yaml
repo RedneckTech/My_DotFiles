@@ -845,6 +845,8 @@ skills:
 # Agent Behavior
 # =============================================================================
   create_dir: ~/.user_config/skills
+  external_dirs:
+    - ~/.user_config/skills
 agent:
   # Maximum tool-calling iterations per conversation (default: 500)
   # Higher = more room for complex tasks, but costs more tokens

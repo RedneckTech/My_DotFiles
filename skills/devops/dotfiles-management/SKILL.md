@@ -26,19 +26,30 @@ files; stow links the packages into `~`.
 
 The repo's top-level `skills/` dir is the shared home for Hermes agent-created
 (self-improving) skills — the ones NOT in Hermes's bundled catalog. It is
-git-tracked but NOT stowed; each host points Hermes at it with:
+git-tracked but NOT stowed; each host points Hermes at it with BOTH settings:
 
     hermes config set skills.create_dir '~/.user_config/skills'
+    hermes config set skills.external_dirs '["~/.user_config/skills"]'
 
-New skills the agent writes land here and are scanned alongside
-`~/.hermes/skills/`; edits to existing skills happen in place. Sync the usual
-way: commit + push after a session, `git pull` on the other host.
+The two keys do different jobs and BOTH are required:
+
+- `skills.create_dir` — where `skill_manage` writes NEW skills (empty = the
+  profile-local `~/.hermes/skills/`). It also feeds the agent's startup skill
+  list, but it is NOT scanned by the `skill_view` / `skills_list` tools.
+- `skills.external_dirs` — extra read-only dirs the tools DO scan. Without it,
+  `skill_view('<name>')` returns "not found" for every shared skill even though
+  the files exist and the prompt lists them.
+
+New skills the agent writes land in `create_dir`; edits to existing skills
+happen in place. Sync the usual way: commit + push after a session, `git pull`
+on the other host.
 
 Caveats: bundled skills stay in `~/.hermes/skills/` (seeded by `hermes update`).
-Local `~/.hermes/skills/` takes precedence over `skills.create_dir`, so a skill
-present in both places shadows the shared copy — remove the local duplicate when
-a skill moves into `skills/`. Never commit `~/.hermes/skills/` runtime state
-(`.curator_ledger.jsonl`, `.usage.json`, `.locks/`, `.bundled_manifest`).
+Local `~/.hermes/skills/` takes precedence over the external/create dirs, so a
+skill present in both places shadows the shared copy — remove the local
+duplicate when a skill moves into `skills/`. Never commit `~/.hermes/skills/`
+runtime state (`.curator_ledger.jsonl`, `.usage.json`, `.locks/`,
+`.bundled_manifest`).
 
 ## Core command
 
