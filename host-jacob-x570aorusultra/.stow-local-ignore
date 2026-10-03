@@ -1,0 +1,4 @@
+# Hermes config.yaml is live state that Hermes rewrites at runtime. It is
+# tracked in this host package as a per-host reference copy, but it must stay
+# a regular file in ~ (not a stow symlink), so stow skips it.
+^/\.hermes/config\.yaml$

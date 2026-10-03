@@ -86,6 +86,13 @@ safe one when a machine has existing-file conflicts.
    file. `~/.hermes/SOUL.md` (persona) is read-only and identical everywhere —
    keep it in shared `home/` and let it be symlinked.
 
+   Because the host package IS stowed, the tracked `config.yaml` would otherwise
+   be symlinked over the live regular file and abort every stow run. Each host
+   package therefore carries a `host-<hostname>/.stow-local-ignore` with
+   `^/\.hermes/config\.yaml$` so stow skips it (stow auto-discovers this file;
+   no `--ignore` flag or script change needed). The live `~/.hermes/config.yaml`
+   is a regular file kept in sync with the host copy via `cp`, never a symlink.
+
 3. **Resolve machine-specific files with a host package, not `--adopt`.**
    `--adopt` MOVES the live file into the repo (overwriting the committed copy)
    then symlinks — it pollutes the repo with the machine's expanded/generated
