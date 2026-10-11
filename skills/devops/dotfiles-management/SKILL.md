@@ -92,6 +92,10 @@ safe one when a machine has existing-file conflicts.
    `^/\.hermes/config\.yaml$` so stow skips it (stow auto-discovers this file;
    no `--ignore` flag or script change needed). The live `~/.hermes/config.yaml`
    is a regular file kept in sync with the host copy via `cp`, never a symlink.
+   `hermes config set` writes ONLY the live `~/.hermes/config.yaml` — the repo
+   copy `host-<hostname>/.hermes/config.yaml` goes stale and must be synced with
+   `cp ~/.hermes/config.yaml host-<hostname>/.hermes/config.yaml` before
+   committing, or the change never reaches git.
 
 3. **Resolve machine-specific files with a host package, not `--adopt`.**
    `--adopt` MOVES the live file into the repo (overwriting the committed copy)
@@ -110,6 +114,14 @@ safe one when a machine has existing-file conflicts.
    directory", the whole operation aborts and nothing is applied. Diagnose with
    the `-n` dry run and read the trailing "would cause conflicts" list — do not
    assume a partial apply happened.
+
+6. **Pulling with local WIP: stash, fast-forward, pop — rename detection does
+   the rest.** When the remote renamed a file you have uncommitted edits to
+   (e.g. `home/.hermes/config.yaml` → `host-<hostname>/.hermes/config.yaml`), a
+   plain `git pull` refuses with "would be overwritten". `git stash push` →
+   `git pull --ff-only` → `git stash pop` works cleanly: git's rename detection
+   re-applies the stashed edit to the new path. Verify with `git diff` on the
+   renamed file afterward.
 
 ## Secrets convention
 
