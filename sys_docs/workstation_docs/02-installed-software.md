@@ -6,6 +6,7 @@ before upgrading it, or you'll break a symlink / leave an orphan.
 | Manager | Prefix / scope | Notes |
 |---------|---------------|-------|
 | **apt** (`dpkg`) | system | 112 manually-installed packages (the base + user apps) |
+| **ROCm** (AMD apt repo) | `/opt/rocm-7.2.4` | HIP SDK 7.2.4, `repo.radeon.com` pinned above `universe` (local LLM compute) |
 | **Homebrew** | `/home/linuxbrew/.linuxbrew` | 261 formulae (~20 top-level; the Qt6/mesa/ffmpeg stack lives here) |
 | **snap** | `/snap` | 6 user apps + bases |
 | **flatpak** | system | 1 app (RetroArch) |
@@ -51,6 +52,25 @@ tools, language servers). `uv` itself lives at `~/.hermes/bin/uv`. See
 - `browser-use` v0.13.10 (→ `browser`, `browser-use`, `browseruse`, …)
 - `llmdoc` v0.3.1
 - `markitdown-mcp` v0.0.1a7
+
+## ROCm & local LLM stack
+
+- **ROCm 7.2.4** — AMD HIP SDK at `/opt/rocm-7.2.4` (symlink `/opt/rocm`),
+  installed via `rocm-hip-sdk` (+ `cmake`, `ninja-build`) from
+  `repo.radeon.com/rocm/apt/latest`, pinned above `universe` in
+  `/etc/apt/preferences.d/rocm.pref`. For the RX 9070 XT (`gfx1201`).
+- **llama.cpp** — built from source at `~/llama.cpp` (`GGML_HIP=ON`,
+  `gfx1201`); binaries in `~/llama.cpp/build/bin/` (`llama-server`,
+  `llama-cli`, `llama-bench`).
+- **Model**: `~/models/qwen2.5-coder-14b-instruct-q4_k_m.gguf` (8.99 GB).
+- **Scripts** (plain files, not in the dotfiles repo): `~/ai/start-llm.sh`
+  (server launch, tuned flags) and `~/bin/llm` (`llm -s` / `llm -k`).
+- **nvtop 3.3.2** — built from source at `~/nvtop` (tag `3.3.2`, `AMDGPU_SUPPORT=ON`)
+  and installed to `~/.local/bin/nvtop`, shadowing apt's `3.0.2` which aborts on
+  RDNA4 when a process saturates VRAM (`assert gpu_memory_percentage <= 100`).
+  Needs `libudev-dev` at build time (present).
+
+Full details (install, tuning, OpenCode wiring): `../AI_DOCs/07-local-llm.md`.
 
 ## snap
 

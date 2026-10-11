@@ -14,6 +14,7 @@ machine — where it lives, what it does, and how the pieces connect.
 | Hermes Agent | Nous Research personal agent (this one) | `~/.hermes/` (symlinked) | [hermes](./04-hermes-agent.md) |
 | Claude Code | Coding agent (skills only) | `~/.claude/` | [claude](./05-claude-code.md) |
 | OpenAI Codex | Coding agent | `~/.codex/` | [codex](./06-codex.md) |
+| Local LLM (llama.cpp) | Self-hosted Qwen2.5-Coder 14B on the RX 9070 XT (ROCm) | `~/llama.cpp/`, `~/models/`, `~/ai/`, `~/bin/llm` | [local-llm](./07-local-llm.md) |
 | Dotfiles repo | Source of truth for all the above | `~/.user_config/` (git) | [dotfiles](./01-dotfiles-config-management.md) |
 
 ## The one thing to understand first
@@ -31,4 +32,6 @@ sync. See [01-dotfiles-config-management.md](./01-dotfiles-config-management.md)
   `~/.bashrc`, kept out of git via `.gitignore`)
 - LLMDoc docs sources served at `http://127.0.0.1:8099/` by a systemd user unit
 - LLMDoc search index: `~/.local/share/llmdoc/index.db` (DuckDB, ~285 MB)
+- Local LLM: llama.cpp server (`llm -s`/`llm -k`) on `127.0.0.1:8080`, model
+  `qwen-coder`; OpenCode provider `llamacpp` points at it
 - Hermes model: `opencode-go/deepseek-v4-pro` via OpenRouter

@@ -8,7 +8,8 @@
   preemption available via `preempt=full`).
 - Hostname: `jacob-x570aorusultra`. Machine ID `7553d15a…`.
 - User: `jpfeiff` (UID 1000), in groups `sudo`, `adm`, `libvirt`, `plugdev`,
-  `sambashare`, `dip`, `cdrom`, `lpadmin`.
+  `sambashare`, `dip`, `cdrom`, `lpadmin`, plus `render` and `video` (ROCm
+  GPU-compute access to `/dev/kfd`, added 2026-09-18).
 
 ## Motherboard / firmware
 
@@ -30,7 +31,12 @@
   DRM 3.64. Works over X11 (Plasma x11 session).
 - Also present: `mesa-vulkan-drivers` (apt) and Homebrew `mesa` — two Mesa
   installs coexist; the rendering stack resolves to the one on the lib path.
-- Monitoring tools installed: `nvtop`, `radeontop`, `glances`.
+- Monitoring tools installed: `nvtop` (built from source, see below), `radeontop`,
+  `glances`.
+- **Compute**: ROCm **7.2.4** (`/opt/rocm-7.2.4`, symlink `/opt/rocm`) for
+  HIP/GPU compute — used by the local llama.cpp LLM stack. Installed from
+  AMD's apt repo (`repo.radeon.com`, pinned above `universe`). See
+  `../AI_DOCs/07-local-llm.md`.
 
 ## Storage
 

@@ -17,6 +17,20 @@ currently disabled; see note below).
   `~/.config/opencode/skills/`)
 - Plugin: `superpowers` (see Skills section)
 
+## Providers & models
+
+Three providers, switched with `Ctrl+X M` in the TUI or `--model` on the CLI:
+
+| Provider | What it is | Auth | Models |
+|----------|-----------|------|--------|
+| `opencode` | OpenCode Zen — hosted gateway of verified models | `/connect` (key in `~/.local/share/opencode/auth.json`) | `opencode/*` (claude, gpt, gemini, deepseek, glm, …) |
+| `opencode-go` | OpenCode Go — low-cost hosted plan | `/connect` | `opencode-go/*` |
+| `llamacpp` | Local — Qwen2.5-Coder 14B via llama.cpp/ROCm on the RX 9070 XT (`@ai-sdk/openai-compatible`, `baseURL http://127.0.0.1:8080/v1`) | none (localhost) | `qwen-coder` (context 65536, output 8192) |
+
+The `llamacpp` provider is defined inline in `opencode.jsonc` under `provider`
+(no auth key needed); start the server first with `llm -s`. See
+[07-local-llm.md](./07-local-llm.md).
+
 ## MCP servers (from `opencode.jsonc`)
 
 All are `type: "local"` (spawned as child processes).
