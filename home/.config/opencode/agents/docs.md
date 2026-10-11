@@ -206,7 +206,13 @@ genuinely warranted, scope it with an inline comment
 4. Lint: `npx markdownlint-cli2 "**/*.md"` (or the classic CLI) until clean.
 5. Verify: links resolve, code blocks have languages and run, headings
    increment correctly, one h1 per file.
-6. Report: files written/updated, what changed, lint result, and anything you
+6. Commit: hand the docs change to the `git` subagent (via `task`) rather than
+   committing inline. State what changed (one line + the approved commit verb),
+   whether it is a `wip:` savepoint or a real commit, and whether to push
+   (normally "no" until the task's end). The `git` subagent owns staging
+   discipline — it stages specific paths, reviews `git diff --cached`, and
+   never `git add .` (so no accidental commits of generated/secret files).
+7. Report: files written/updated, what changed, lint result, and anything you
    could not verify.
 
 ## Pitfalls
@@ -239,3 +245,5 @@ genuinely warranted, scope it with an inline comment
 7. Verify commands and facts against code/runtime before documenting them;
    update docs in the same change as the code.
 8. Report: files written, doc type, lint result, and any unverifiable items.
+9. Hand commits to the `git` subagent (via `task`); commit per logical change
+   plus a `wip:` savepoint on large tasks; push only at task end or when asked.

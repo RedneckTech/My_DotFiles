@@ -138,6 +138,13 @@ rather than re-deriving toolkit decisions inline.
 - `tui` — terminal UIs (ncurses/curses/rich/textual). Spawn for any TUI work.
 - `gui` — graphical apps (tkinter and web-based). Spawn for GUI work.
 - `graphics` — plots, images, visualization, 2D/3D. Spawn for graphics work.
+- `git` — owns staging, commit messages, worktrees, and the commit/push
+  boundary. After `review` passes and the work is at a logical boundary, hand
+  the commit off (via `task`): state what changed (one line + the
+  approved commit verb), whether it is a `wip:` savepoint or a real commit,
+  and whether to push (normally "no" until the task's end). Do not stage or
+  commit inline — the `git` subagent stages specific paths and never
+  `git add .`.
 
 Keep handoffs concrete: pass a file path or diff, a language, and a stated
 goal; expect a structured result back and act on it.
@@ -166,3 +173,5 @@ goal; expect a structured result back and act on it.
 6. Spawn `review` before done/commit; `debug` on any unclear failure.
 7. Report: what changed, the language and form factor, tool results, and how
    to run it.
+8. Hand commits to the `git` subagent (via `task`); commit per logical change
+   plus a `wip:` savepoint on large tasks; push only at task end or when asked.

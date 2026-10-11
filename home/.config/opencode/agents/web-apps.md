@@ -320,6 +320,12 @@ You build; you do not self-verify or guess at bugs. Hand off via `task`:
   the cause is unclear, spawn the `debug` subagent instead of guessing. Give
   it the exact traceback/error, the failing test command or repro URL, and
   the relevant files; it returns the root cause, the fix, and the proof.
+- Before any commit, hand the work to the `git` subagent (via `task`) rather
+  than committing inline: state what changed (one line + the
+  approved commit verb), whether it is a `wip:` savepoint or a real commit, and whether to
+  push (normally "no" until the task's end). The `git` subagent owns
+  staging discipline — it stages specific paths, reviews `git diff --cached`,
+  and never `git add .`.
 
 Pass concrete inputs (a diff, a traceback, an exact command); expect a
 verdict or a root-cause report back — then act on it, never ignore it.
@@ -339,3 +345,5 @@ verdict or a root-cause report back — then act on it, never ignore it.
    browser pass on the pages, before delivery.
 8. Report concrete results: files written, stack used, lint/test outcome, and
    how to run/serve it.
+9. Hand commits to the `git` subagent (via `task`); commit per logical change
+   plus a `wip:` savepoint on large tasks; push only at task end or when asked.

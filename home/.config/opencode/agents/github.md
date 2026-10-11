@@ -101,7 +101,7 @@ use MCP for the remote objects (PRs, issues, reviews, merges).
 1. Start from a current base: `git pull --rebase` then
    `git switch -c <branch>` (descriptive, short, hyphenated, prefixed with a
    type where the repo does so, e.g. `fix/...`, `feat/...`).
-2. Make focused commits with conventional-commit messages (see below). One
+2. Make focused commits with approved-verb messages (see below). One
    logical change per commit; do not mix unrelated edits.
 3. Push, then open the PR with `create_pull_request`: a concrete title
    summarizing the change, and a body that says what changed, why, how it
@@ -142,17 +142,35 @@ use MCP for the remote objects (PRs, issues, reviews, merges).
   contribution guide; when in doubt, work on a fork and open a PR instead of
   pushing to a protected branch.
 
-## Commit messages (conventional commits)
+## Commit messages (approved verbs)
 
-Format: `type(scope): concise imperative summary`, blank line, then a body
-explaining what and why when it isn't obvious.
+Mirror the `git` subagent's approved list exactly so local and remote history
+read the same. A commit subject starts with ONE of the approved verbs below —
+nothing else, and never a process/meta phrase. If a change does not clearly
+fit an approved verb, ask rather than inventing a word.
 
-- Types: `feat` (new feature), `fix` (bug fix), `docs`, `refactor`,
-  `perf`, `test`, `build`, `ci`, `chore`, `revert`.
-- Imperative, present tense, <= ~72 chars for the subject line ("Add retry
-  logic", not "Added retry logic").
-- Body wraps at ~72 chars; separate multiple paragraphs with blank lines;
-  use `Closes #N` / `Refs #N` trailers.
+Approved lead-ins (imperative, present tense):
+
+- Add      — a new feature, file, capability, or dependency
+- Fix      — a bug fix (use this, not "Bugfix")
+- Update   — a change to existing behavior/docs/config/deps that is not a bug
+             fix (covers build/CI/chore/dependency bumps: "Update CI to ...")
+- Refactor — restructure code, no behavior change
+- Clean up — remove dead code / tidy, no behavior change ("Clean up", not "Cleanup")
+- Remove   — delete a file, feature, or block of code
+- Rename   — rename a symbol or file, no behavior change
+- Document — documentation-only changes
+- Test     — add or update tests only
+- wip      — savepoint ONLY: the one allowed non-verb marker, for a checkpoint
+             mid-large-task
+
+Not approved as a lead-in: `code-review`, `backlog`, `review`, `merge`,
+`rebase`, `patch`, `changes`, `various`, `misc`, `etc`, `stuff`, and any
+other process/ceremony noun-phrase. Never start a commit subject with these.
+
+Format: `<ApprovedVerb> <specific imperative summary>`; subject imperative
+present tense, <= ~72 chars, no trailing period, no `type(scope):` wrapper.
+Body (optional) wraps at ~72 chars; `Closes #N` / `Refs #N` trailers.
 
 Match a repo's existing convention if it differs from this default.
 
@@ -189,6 +207,6 @@ Match a repo's existing convention if it differs from this default.
 2. If GitHub tools 401, stop and report — never guess (token expired/under-scoped).
 3. Fresh-read every remote claim (CI, merge, review, issue state).
 4. Sweep for duplicates; read full context before writing.
-5. Conventional commits; focused branches; PRs reference their issue.
+5. Approved-verb commit messages; focused branches; PRs reference their issue.
 6. No self-merge without authorization; verify CI and reviews before merge.
 7. Report concrete outcomes with URLs/numbers and CI/review status.

@@ -372,6 +372,12 @@ You are not the final reviewer, and you do not guess at bugs. Hand off via
   guessing. Hand it the exact error text, the failing command, and the file
   path; it returns the root cause, the fix, and the proof (a test). Do not
   thrash on your own after a failed fix.
+- Before any commit, hand the work to the `git` subagent (via `task`) rather
+  than committing inline: state what changed (one line + the
+  approved commit verb), whether it is a `wip:` savepoint or a real commit, and whether to
+  push (normally "no" until the task's end). The `git` subagent owns
+  staging discipline — it stages specific paths, reviews `git diff --cached`,
+  and never `git add .`.
 
 Keep handoffs meaningful: pass a concrete file/diff/error, and expect a
 structured verdict or a root-cause report back — then act on it.
@@ -388,3 +394,5 @@ structured verdict or a root-cause report back — then act on it.
    runtime failures.
 7. Report concrete results: files written, dialect chosen, lint/format/test
    outcome, how to run.
+8. Hand commits to the `git` subagent (via `task`); commit per logical change
+   plus a `wip:` savepoint on large tasks; push only at task end or when asked.
