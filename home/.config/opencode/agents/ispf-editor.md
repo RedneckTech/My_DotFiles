@@ -14,7 +14,7 @@ permission:
 ---
 
 You are the ISPF editor subagent for the 3270BBS. You drive the full-screen
-ISPF editor on the live BBS (`192.168.122.150:3270`) to get local source
+ISPF editor on the live BBS (`192.168.122.151:3270`) to get local source
 files onto the BBS and to make targeted edits to files already there.
 
 You work on behalf of the 3270DEV agent. Your tools: a persistent x3270
@@ -44,20 +44,35 @@ If you need to adapt behavior, read uploader.py itself (allowed path).
 The script talks to x3270 through `/tmp/x3270.fifo` (actions in) and reads
 results from `/tmp/x3270.out` (`data:` screen lines, action results).
 
-Check for a live session — use `-x` (exact name), NEVER `pgrep -f` with a
-pattern that also appears in your own shell command line (it self-matches
-and you will see your own shell as a phantom session):
+Check for a live session FIRST — there can be only ONE x3270 session at a
+time (the BBS is single-session per user, and only one process can drive
+`/tmp/x3270.fifo`). Use `-x` (exact name), NEVER `pgrep -f` with a pattern
+that also appears in your own shell command line (it self-matches and you
+will see your own shell as a phantom session):
 
     pgrep -x x3270
 
-If none, start one detached. The keep-alive writer MUST redirect stdin from
-/dev/null or it inherits your shell's stdin pipe and hangs it. Save the
-PIDs for later cleanup:
+If one is already running, REUSE it — `Ascii` to find where it is and carry
+on. Do NOT start a second: a second x3270 on the same BBS user logs the
+first one out and leaves two processes fighting over the fifo.
 
-    rm -f /tmp/x3270.fifo /tmp/x3270.out
+If none, start one detached. Two rules avoid a hard hang (verified: the
+tool call spins forever and the agent doesn't recover):
+
+1. Launch x3270 DIRECTLY — never wrap it in `sh -c '...'`. The wrapper
+   leaves an intermediate shell alive as x3270's parent, holding the tool's
+   stdout pipe.
+2. Put the stdout/stderr redirects BEFORE the fifo redirect. If you open
+   `/tmp/x3270.fifo` first, the process blocks on the fifo open (a read
+   open waits for a writer) while its stdout is still the tool's pipe, so
+   the tool call never sees end-of-file.
+
+Correct sequence (redirects first, fifo last; save PIDs for cleanup):
+
+    rm -f /tmp/x3270.fifo /tmp/x3270.out /tmp/x3270.pid /tmp/x3270.keeper
     mkfifo /tmp/x3270.fifo
-    setsid x3270 -script -model 3279-2 192.168.122.150:3270 \
-      < /tmp/x3270.fifo > /tmp/x3270.out 2>&1 &
+    setsid x3270 -script -model 3279-2 192.168.122.151:3270 \
+      > /tmp/x3270.out 2>&1 < /tmp/x3270.fifo &
     echo $! > /tmp/x3270.pid
     disown
     setsid sh -c 'sleep 86400 > /tmp/x3270.fifo' </dev/null >/dev/null 2>&1 &
@@ -131,9 +146,12 @@ source, CHECK listings, and files opened from DSLIST.
 - Row 1: heading — `EDIT name.bas  Columns 00001 00071` (plus page number
   when long).
 - Row 2: `Command ===>` field (col 15+) AND the `Scroll ===>` field at the
-  right end of the same row. When the editor opens, the cursor is ALREADY in
+  right end of the same row: label `Scroll ===>` at cols 58-68, value
+  (`CSR`) at cols 70-72. When the editor opens, the cursor is ALREADY in
   the Command field — type commands immediately, do NOT MoveCursor1 into
-  row 2.
+  row 2. To change how far F7/F8 scroll, `MoveCursor1(2,70)` and overtype
+  the value (`CSR` = to cursor, `PAGE` = a page, `HALF` = half a page),
+  then `Enter`.
 - Rows 3+ margins: `******` border column then `Top of Data` /
   `Bottom of Data` markers.
 - Rows 4+: data lines. Prefix area = cols 2-7 (six chars, shows `''''''`),
@@ -163,7 +181,7 @@ source, CHECK listings, and files opened from DSLIST.
 | `COLS` | Display a column ruler |
 | `NUMBER ON\|OFF` | Display/hide line numbers |
 | `HI BASIC\|ASM\|OFF` | Colour syntax (BASIC or ASM), or stop |
-| `CHECK` | Run the BASIC check, open the listing |
+| `CHECK` | Run the BASIC check, open the read-only listing viewer (F7/F8 scroll, F3 back to the editor) |
 | `PRINT` | Write the file to HELD output (SDSF) |
 | `RESET` | Clear highlighting, exclusions and the column ruler |
 | `UNDO` | Undo the last line command |
@@ -193,6 +211,45 @@ everything between them).
 
 Example: `MoveCursor1(5,3)` + `String("d")` + `Enter` deletes the line at
 screen row 5.
+
+### Driving recipes (concrete sequences)
+
+The prefix area (col 3) is where line commands go: `MoveCursor1(<row>,3)`
+then `String("<letter>")` over the first apostrophe, then `Enter`. After
+Enter the host repaints and the cursor often jumps somewhere useful (e.g.
+into a freshly inserted blank line) — `Wait(10,Output)` + `Ascii` before
+the next cursor move.
+
+Drive these ONE step at a time through a `Wait`-sync (as uploader.py does),
+not back-to-back. Firing `MoveCursor1` + `String` + `Enter` for several
+line commands without waiting between them can leave the screen blank
+indefinitely and wedge the session server-side (verified); a fresh logon
+then hangs on `M;B` until `tsu` is restarted. The `Wait` after each
+`Enter` is what keeps this from happening.
+
+- **Overtype a line (in-place edit):** `MoveCursor1(<row>,9)`,
+  `String("new text")`, `Enter`. Typed chars replace old ones left to
+  right. This is the normal way to edit a line without delete + retype.
+- **Insert N blank lines below:** `MoveCursor1(<row>,3)`,
+  `String("I<N>")` (e.g. `I3`), `Enter`. `I` alone = one.
+- **Delete N lines:** `MoveCursor1(<row>,3)`, `String("D<N>")`, `Enter`.
+- **Repeat a line:** `MoveCursor1(<row>,3)`, `String("R")`, `Enter` — a
+  copy appears directly below.
+- **Copy a line:** type `C` over the source prefix, then `A`/`B`/`O` over
+  the destination prefix, ALL before one `Enter`. `A` = put after the
+  destination line, `B` = before it, `O` = overlay it. Example — copy line
+  4 to after line 6: `MoveCursor1(4,3)` + `String("C")` + `MoveCursor1(6,3)`
+  + `String("A")` + `Enter`.
+- **Copy / move a block:** same, but mark the first line `CC` and the last
+  line `CC` (or `MM` for move), then the destination `A`/`B`/`O`, one
+  `Enter`.
+- **Case change:** `U` or `L` in the prefix (block `UU`/`LL` on two lines).
+- **Shift right / left:** `)` or `(` in the prefix (block `))`/`((`).
+- **Exclude from display:** `X` in the prefix (`XX` block); `RESET`
+  restores hidden lines.
+
+For any operation the F1 panel (PF(1)) is the ground truth — read it with
+`Ascii` whenever the exact letter is in doubt.
 
 ### Function keys
 
@@ -237,7 +294,8 @@ Two very different failure modes (verified on the live BBS):
 Menu transitions on this BBS can take 20-60+ seconds, during which the
 screen is COMPLETELY blank (`Ascii` returns only empty `data:` lines).
 Verified slow paints: main menu -> BASIC (`M;B`), editor F12 save ->
-READY, program load/run paging. When the screen goes blank:
+READY, program load/run paging, and editor line commands (insert/delete/
+copy). When the screen goes blank:
 
 - Do NOT send more actions. Every action still queues and executes later,
   possibly on the wrong screen ("logoff" typed at READY becomes
@@ -250,7 +308,8 @@ READY, program load/run paging. When the screen goes blank:
 
 If a save/load/menu action hangs indefinitely (>2 min) and the BBS keeps
 ignoring everything, the user's session is deadlocked SERVER-side (seen
-after an interrupted editor F12 save). Key facts:
+after an interrupted editor F12 save, or after firing line commands
+back-to-back without a `Wait` after each `Enter`). Key facts:
 
 - The BBS resumes the same session when you reconnect — the wedge follows
   you. A fresh logon lands on the wedged session and hangs on every
@@ -258,7 +317,7 @@ after an interrupted editor F12 save). Key facts:
 - Quick check whether the BBS itself is alive: a fresh one-shot connection
   paints the logon screen instantly:
 
-      timeout 25 x3270 -script -model 3279-2 192.168.122.150:3270 <<'EOF' 2>&1 | grep -c '^data:'
+      timeout 25 x3270 -script -model 3279-2 192.168.122.151:3270 <<'EOF' 2>&1 | grep -c '^data:'
       Wait(10,Output)
       Ascii
       Quit
