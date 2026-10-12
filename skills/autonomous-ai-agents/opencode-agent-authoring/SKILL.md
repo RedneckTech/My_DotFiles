@@ -16,6 +16,11 @@ which is the separate `opencode` skill).
 
 - Agents live in `~/.user_config/home/.config/opencode/agents/` — NOT the
   default `~/.config/opencode/agents/`. Do not assume the default path.
+- opencode actually READS agents from `~/.config/opencode/agents/`, which is
+  a directory of symlinks that stow creates into the repo path. A new agent
+  `.md` committed to the repo is invisible to opencode until its symlink
+  exists — re-run stow (or `ln -s ../../../.user_config/home/.config/opencode/agents/<name>.md ~/.config/opencode/agents/<name>.md`)
+  and confirm with `opencode agent list` before assuming the agent is live.
 - One `.md` per agent; filename = agent name (`ScriptDev.md`, `web-apps.md`).
 - The directory mixes one-line stubs and dense full guides (`3270DEV.md`,
   `ispf-editor.md`). Read a sibling (one dense + one stub) before editing to
@@ -98,7 +103,10 @@ stubs. A finished agent has these sections, in this order:
 - NEVER hardcode a repository/owner into an agent meant to work on "whatever
   project". Derive `OWNER/REPO` from the working directory's
   `git remote get-url origin` (SSH or HTTPS form) each time, and stop and ask
-  when there is no `origin`.
+  when there is no `origin`. For a helper script that only needs to TARGET
+  the current project (not name an owner/repo), derive the repo ROOT with
+  `git rev-parse --show-toplevel` of the cwd — it works in a freshly
+  `git init`-ed repo with no remote, where `get-url origin` fails.
 
 ## User preferences
 
@@ -110,8 +118,14 @@ stubs. A finished agent has these sections, in this order:
 - Commit messages use an APPROVED plain-English verb list (Add, Fix, Update,
   Refactor, Clean up, Remove, Rename, Document, Test + `wip` savepoints) as
   the subject lead-in — NOT conventional `type(scope):`. Forbid process/meta
-  prefixes like `code-review` or `backlog`. Encoded in the `git.md` and
-  `github.md` agents (keep them in sync).
+  prefixes like `code-review` or `backlog`. Encoding the verb list is not
+  enough: the `git` subagent owns staging AND these messages, so author
+  primary/build agents to HAND OFF committing to `git` (working tree + a
+  one-line description of what changed) instead of running `git commit`
+  themselves — and any helper script that auto-commits as a convenience must
+  write the SAME approved verbs (never a self-invented prefix like `bbs:`),
+  with a no-commit default so the agent prefers the subagent path. Encoded in
+  the `git.md` and `github.md` agents (keep them in sync).
 
 ## Pitfalls
 
@@ -124,3 +138,14 @@ stubs. A finished agent has these sections, in this order:
   `permission`, and `mode` as-is.
 - A broad "web apps"-style agent is underdetermined — clarify the stack
   before writing, or you produce a guide aimed at the wrong framework.
+- An agent `.md` that exists in the repo but is missing from
+  `opencode agent list` is a missing symlink, not a bad file — the file was
+  committed but stow was never re-run. Create the symlink (or re-stow) and
+  re-check the list before debugging the file content.
+- Do not let an agent cite a manual/spec as its source of truth without
+  verifying it. A bundled manual can be an OLDER version than the running
+  system, and an agent told to "read the manual for exact syntax" will
+  faithfully reproduce its errors. Once you have verified divergences,
+  point the agent at the verified reference and add an explicit "trust the
+  verified docs over the manual" rule plus a short corrections table —
+  never leave the manual cited as authoritative.

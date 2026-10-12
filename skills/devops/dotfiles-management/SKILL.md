@@ -51,6 +51,26 @@ duplicate when a skill moves into `skills/`. Never commit `~/.hermes/skills/`
 runtime state (`.curator_ledger.jsonl`, `.usage.json`, `.locks/`,
 `.bundled_manifest`).
 
+## Shared AI assets (`ai/`)
+
+The repo's top-level `ai/` dir is the portable, cross-machine home for
+AI-facing assets — git-tracked but NOT stowed, exactly like `skills/` and
+`sys_docs/` (the AI reads/runs them straight from the repo path, so they
+stay out of `$HOME` and cannot collide with real files):
+
+- `ai/scripts/` — reusable helper scripts, one subdir per tool (`x3270/`,
+  `bbs/`). Run by path; nothing is stowed or on `$PATH`.
+- `ai/references/` — verified, authoritative reference docs, one subdir per
+  subject (`timesharing-basic/`). These are what the AI should trust over a
+  vendor manual.
+
+Each dir carries its own `README.md` index. Both hold COPIES of a project's
+working copy (the project keeps the canonical one) — improve the project
+copy, then re-copy here so every machine gets it; the READMEs record which
+copy is canonical so the two don't silently diverge. `.gitignore` covers
+`__pycache__/` and `*.pyc` so bytecode from these scripts never gets
+committed.
+
 ## Core command
 
 ```
