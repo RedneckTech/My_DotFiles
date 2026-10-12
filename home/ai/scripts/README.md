@@ -1,10 +1,10 @@
 # ai/scripts/ — reusable AI helper scripts
 
-Small scripts that come up again and again across sessions and projects. Run
-them by path — nothing here is stowed or on `$PATH`:
+Small scripts that come up again and again across sessions and projects.
+Stowed at `~/ai/scripts/`; run them by path (not on `$PATH`):
 
 ```bash
-python3 ~/.user_config/ai/scripts/<tool>/<script>.py [args]
+python3 ~/ai/scripts/<tool>/<script>.py [args]
 ```
 
 | Script | What it does |

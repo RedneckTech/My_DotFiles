@@ -7,12 +7,12 @@ agents, etc.) need on **every** machine:
 - `references/` — verified, authoritative reference documents (the ones the
   AI should trust over any vendor/manual prose).
 
-Both are **tracked but NOT stowed** (like `skills/` and `sys_docs/`): the AI
-reads and runs them straight from the repo path, so they stay out of `$HOME`
-and can't collide with real files.
+The tree lives in the shared `home/` stow package, so **stow links it at
+`~/ai/`** — use that path (`~/ai/scripts/...`, `~/ai/references/...`). Edit
+the files in the repo (`home/ai/...`); `~/ai/` is just the symlink view.
 
 ```
-ai/
+~/ai/                        (stowed from home/ai/)
   scripts/
     x3270/    drive.py          drive a persistent x3270 -script session (fifo)
     bbs/      uploader.py       type a local BASIC/assembler file into the BBS ISPF editor

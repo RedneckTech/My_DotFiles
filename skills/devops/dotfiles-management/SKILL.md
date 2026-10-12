@@ -53,16 +53,15 @@ runtime state (`.curator_ledger.jsonl`, `.usage.json`, `.locks/`,
 
 ## Shared AI assets (`ai/`)
 
-The repo's top-level `ai/` dir is the portable, cross-machine home for
-AI-facing assets — git-tracked but NOT stowed, exactly like `skills/` and
-`sys_docs/` (the AI reads/runs them straight from the repo path, so they
-stay out of `$HOME` and cannot collide with real files):
+The `home/ai/` dir is the portable, cross-machine home for AI-facing assets.
+It lives in the shared `home/` stow package, so stow links the whole tree at
+`~/ai/` on every machine:
 
-- `ai/scripts/` — reusable helper scripts, one subdir per tool (`x3270/`,
-  `bbs/`). Run by path; nothing is stowed or on `$PATH`.
-- `ai/references/` — verified, authoritative reference docs, one subdir per
-  subject (`timesharing-basic/`). These are what the AI should trust over a
-  vendor manual.
+- `home/ai/scripts/` → `~/ai/scripts/` — reusable helper scripts, one subdir
+  per tool (`x3270/`, `bbs/`). Run by path; not on `$PATH`.
+- `home/ai/references/` → `~/ai/references/` — verified, authoritative
+  reference docs, one subdir per subject (`timesharing-basic/`). These are
+  what the AI should trust over a vendor manual.
 
 Each dir carries its own `README.md` index. Both hold COPIES of a project's
 working copy (the project keeps the canonical one) — improve the project

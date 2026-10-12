@@ -2,6 +2,7 @@
 
 Verified reference material the AI should **trust over vendor prose or
 manuals**. Each subject gets its own subdirectory with a `README.md` index.
+Stowed at `~/ai/references/`.
 
 A reference belongs here when it is:
 
