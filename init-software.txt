@@ -1,37 +1,57 @@
 # init-software.txt
 # Software installed outside the default Kubuntu 24.04 install
-# Generated 2026-09-11
+# Generated 2026-10-14
 
 ## 1. Manually downloaded binaries (reinstall by hand)
-# ~/.local/bin/
-zig
+
+### ~/.local/bin/
+zig                      # Zig compiler
 zls                      # Zig language server
-lua-language-server     # wrapper -> ~/.local/opt/lua-language-server
+lua-language-server      # wrapper -> ~/.local/opt/lua-language-server
+fbc                      # FreeBASIC compiler 1.10.1
+nvtop                    # v3.3.2 (newer than apt's 3.0.2)
+github-mcp-server        # MCP server (Go binary)
+mcp-filesystem-server    # MCP server (Go binary)
+gen-llms-txt.py          # own script
 
-# /usr/local/bin/
-iso_extractor            # own bash script
+# npm global packages (symlinks -> ~/.local/lib/node_modules/)
+codegraph                            # @colbymchenry/codegraph
+mcp-server-memory                    # @modelcontextprotocol/server-memory
+mcp-server-sequential-thinking       # @modelcontextprotocol/server-sequential-thinking
+playwright-mcp                       # @playwright/mcp
+terminal-driver-mcp                  # terminal-driver-mcp
 
-# ~/bin/ (own scripts)
+# uv tools (symlinks -> ~/.local/share/uv/tools/)
+llmdoc                   # llmdoc
+markitdown-mcp           # markitdown-mcp
+
+# Hermes / agent tooling
+hermes / hermes-agent / hermes-acp   # launchers -> ~/.hermes/hermes-agent
+node / npm / npx          # -> ~/.hermes/node
+cua-driver                # -> ~/.cua-driver
+inv / invoke              # Python invoke entry points (brew python@3.14)
+
+### /usr/local/bin/
+iso_extractor             # own bash script
+
+### ~/bin/ (own scripts, git repo)
 arcman
 cpp.sh
+llm                      # local LLM start/stop
 mvp.sh
 note.sh
 personal_financial_report.py
 whereis.sh
 
-# AppImage
-cursor-0.33.4x86_64.AppImage   # ~/Documents/System_Setup_Docs/User_Packages/
+### AppImage / .deb (in ~/Documents/System_Setup_Docs/User_Packages/)
+cursor-0.33.4x86_64.AppImage
+obsidian_1.5.12_amd64.deb
 
 ## 2. Homebrew (Linuxbrew)
-# brew install:
-fastfetch
-glances
-gum
-lazygit
-ripgrep
-shellcheck
-starship
-superfile
+# brew install (top-level apps):
+fastfetch glances gum lazygit ripgrep shellcheck starship superfile
+# toolchains / libraries (also top-level leaves):
+go rust openjdk qt glew glfw sdl2_image sdl2_ttf
 # brew install --cask:
 codex
 
@@ -41,12 +61,18 @@ RetroArch              # flatpak install flathub org.libretro.RetroArch
 ## 4. Snap
 bash-language-server   # classic
 discord
+firefox
+firmware-updater
 ghostty                # classic
 marktext
+thunderbird
 
 ## 5. Apt (manually installed apps; system packages omitted)
 sudo apt install \
-  alacritty c3270 clamav clangd eza fzf git htop librewolf micro nala \
-  nvtop p7zip-full qbittorrent radeontop rclone rofi shfmt steam stow \
-  tldr tree unrar vlc x3270 xbindkeys yakuake zoxide \
+  alacritty c3270 clamav clangd cmake eza fzf git htop iverilog librewolf \
+  libudev-dev libvirt-clients libvirt-daemon-system mesa-vulkan-drivers micro \
+  nala ninja-build nvtop ovmf p7zip-full python3-pylsp qbittorrent \
+  qemu-system-x86 radeontop rclone rofi rocm-hip-sdk shfmt steam stow tldr \
+  tree unrar verilator virt-manager vlc x3270 xbindkeys \
+  xserver-xorg-video-amdgpu yakuake zoxide \
   fcitx5-chinese-addons fcitx5-frontend-all fcitx5-material-color kde-config-fcitx5
