@@ -234,5 +234,6 @@ mcp_servers:
         - limits
   hugging_face:
     url: https://huggingface.co/mcp
-    auth: oauth
+    headers:
+      Authorization: Bearer ${MCP_HUGGING_FACE_API_KEY}
     enabled: true

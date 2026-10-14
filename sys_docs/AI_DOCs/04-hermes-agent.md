@@ -39,6 +39,7 @@ The `.env` is a large template (many providers document-stubbed with comments).
 OPENCODE_GO_API_KEY
 OPENCODE_ZEN_API_KEY
 GITHUB_PERSONAL_ACCESS_TOKEN
+MCP_HUGGING_FACE_API_KEY
 ```
 
 Most other provider sections (Fireworks, OpenRouter, NovitaAI, Gemini, Ollama
@@ -58,15 +59,16 @@ OAuth servers:
 | `sequential-thinking` | `node .../server-sequential-thinking/dist/index.js` | 1 tool |
 | `markitdown` | `~/.local/bin/markitdown-mcp` | 1 tool |
 | `globalping` | `https://mcp.globalping.dev` (OAuth) | network probes: ping/traceroute/DNS/HTTP (3 tools excluded) |
-| `hugging_face` | `https://huggingface.co/mcp` (OAuth) | models, datasets, papers |
+| `hugging_face` | `https://huggingface.co/mcp` | models, datasets, papers (Bearer token via `${MCP_HUGGING_FACE_API_KEY}`) |
 
 Tools register as `mcp_<server>_<tool>`. The github token is stored as the
 `${GITHUB_PERSONAL_ACCESS_TOKEN}` placeholder (resolved from `~/.hermes/.env`
 at runtime), not hardcoded. Add/remove with `hermes mcp add` / `hermes mcp
 remove`; changes need a session restart or `/reload-mcp`.
 
-`globalping` and `hugging_face` use OAuth 2.1 — authorize once with
-`hermes mcp login <name>` (browser flow) before their tools load.
+`globalping` uses OAuth 2.1 — authorize once with `hermes mcp login globalping`
+(browser flow) before its tools load. `hugging_face` uses a Bearer token
+(`MCP_HUGGING_FACE_API_KEY` in `.env`) instead of OAuth.
 
 ## Platform toolsets
 
