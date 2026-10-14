@@ -3,7 +3,7 @@
 Documentation for **jacob-x570aorusultra**, Jacob's primary desktop. Describes
 the OS, hardware, user-installed software, configs/dotfiles, settings, and
 systemd services. Grounded in live `ls`/`systemctl`/`glxinfo`/package-manager
-output as of 2026-09-18.
+output as of 2026-10-14.
 
 | Doc | Covers |
 |-----|--------|
@@ -15,7 +15,7 @@ output as of 2026-09-18.
 
 ## Quick facts
 
-- **OS**: Ubuntu 24.04.5 LTS (Noble Numbat), kernel 7.0.0-31-generic (HWE)
+- **OS**: Ubuntu 24.04.5 LTS (Noble Numbat), kernel 7.0.0-38-generic (HWE)
 - **Desktop**: KDE Plasma 5.27.12 (Kubuntu) on **X11**, kwin WM, 3× 2560×1440
 - **Hardware**: Gigabyte X570 AORUS ULTRA · AMD Ryzen 9 3900X (12C/24T) ·
   32 GB RAM · AMD Radeon RX 9070 XT (16 GB, RDNA4)

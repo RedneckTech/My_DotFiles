@@ -5,7 +5,7 @@ before upgrading it, or you'll break a symlink / leave an orphan.
 
 | Manager | Prefix / scope | Notes |
 |---------|---------------|-------|
-| **apt** (`dpkg`) | system | 112 manually-installed packages (the base + user apps) |
+| **apt** (`dpkg`) | system | 118 manually-installed packages (the base + user apps) |
 | **ROCm** (AMD apt repo) | `/opt/rocm-7.2.4` | HIP SDK 7.2.4, `repo.radeon.com` pinned above `universe` (local LLM compute) |
 | **Homebrew** | `/home/linuxbrew/.linuxbrew` | 261 formulae (~20 top-level; the Qt6/mesa/ffmpeg stack lives here) |
 | **snap** | `/snap` | 6 user apps + bases |
@@ -85,18 +85,20 @@ editor), `thunderbird`, `bash-language-server`. Plus snap bases/runtimes
 
 ## apt — notable manually-installed packages
 
-Grouped (full manual list is 112 packages):
+Grouped (full manual list is 118 packages):
 
 - **Desktop env**: `kubuntu-desktop`, `kubuntu-wallpapers`, `kde-config-fcitx5`.
 - **Terminals/editors/launchers**: `alacritty`, `yakuake`, `micro`, `rofi`.
 - **Dev tooling**: `shellcheck`, `shfmt`, `python3-pylsp`, `clangd`, `stow`,
-  `eza`, `zoxide`, `fzf`, `tldr`, `nala`.
+  `eza`, `zoxide`, `fzf`, `tldr`, `nala`, `cmake`, `ninja-build`.
+- **FPGA/Verilog**: `iverilog` (12.0), `verilator` (5.020).
 - **BBS/3270**: `x3270`, `c3270`.
 - **Media/gaming**: `vlc`, `steam:i386`, `qpittorrent`, emulators via flatpak
   (RetroArch) — PCSX2/RPCS3 config dirs exist under `~/.config`.
 - **GPU/monitoring**: `nvtop`, `radeontop`, `lm_sensors`, `mesa-utils`,
   `mesa-vulkan-drivers`, `xserver-xorg-video-amdgpu`.
-- **Virtualization**: `qemu-system-x86`, `virt-manager`, `ovmf`.
+- **Virtualization**: `qemu-system-x86`, `virt-manager`, `ovmf`,
+  `libvirt-clients`, `libvirt-daemon-system`.
 - **Storage/filesystems**: `btrfs-progs`, `lvm2`, `xfsprogs`, `jfsutils`,
   `reiserfsprogs`, `exfatprogs`, `dmraid`, `dmeventd`, `kpartx`,
   `thin-provisioning-tools`.
