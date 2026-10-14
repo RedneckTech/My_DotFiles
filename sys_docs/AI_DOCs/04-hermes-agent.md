@@ -47,8 +47,9 @@ present but commented out — available to enable by adding a key.
 
 ## MCP servers
 
-Four stdio MCP servers are wired into Hermes (native MCP client, `mcp_servers`
-key in `config.yaml`), mirroring the OpenCode set:
+Six MCP servers are wired into Hermes (native MCP client, `mcp_servers`
+key in `config.yaml`) — four stdio (mirroring OpenCode) plus two remote
+OAuth servers:
 
 | Server | Command | Notes |
 |--------|---------|-------|
@@ -56,11 +57,16 @@ key in `config.yaml`), mirroring the OpenCode set:
 | `github` | `~/.local/bin/github-mcp-server stdio` | `GITHUB_PERSONAL_ACCESS_TOKEN` via `${...}` placeholder resolved from `.env` (44 tools) |
 | `sequential-thinking` | `node .../server-sequential-thinking/dist/index.js` | 1 tool |
 | `markitdown` | `~/.local/bin/markitdown-mcp` | 1 tool |
+| `globalping` | `https://mcp.globalping.dev` (OAuth) | network probes: ping/traceroute/DNS/HTTP (3 tools excluded) |
+| `hugging_face` | `https://huggingface.co/mcp` (OAuth) | models, datasets, papers |
 
 Tools register as `mcp_<server>_<tool>`. The github token is stored as the
 `${GITHUB_PERSONAL_ACCESS_TOKEN}` placeholder (resolved from `~/.hermes/.env`
 at runtime), not hardcoded. Add/remove with `hermes mcp add` / `hermes mcp
 remove`; changes need a session restart or `/reload-mcp`.
+
+`globalping` and `hugging_face` use OAuth 2.1 — authorize once with
+`hermes mcp login <name>` (browser flow) before their tools load.
 
 ## Platform toolsets
 

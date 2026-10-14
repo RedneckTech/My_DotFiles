@@ -223,3 +223,16 @@ mcp_servers:
   markitdown:
     command: /home/jpfeiff/.local/bin/markitdown-mcp
     enabled: true
+  globalping:
+    url: https://mcp.globalping.dev/mcp
+    auth: oauth
+    enabled: true
+    tools:
+      exclude:
+        - help
+        - compareLocations
+        - limits
+  hugging_face:
+    url: https://huggingface.co/mcp
+    auth: oauth
+    enabled: true
