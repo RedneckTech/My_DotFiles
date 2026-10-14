@@ -149,3 +149,9 @@ stubs. A finished agent has these sections, in this order:
   point the agent at the verified reference and add an explicit "trust the
   verified docs over the manual" rule plus a short corrections table —
   never leave the manual cited as authoritative.
+- Repointing an agent's BODY at a new path is not a free edit — the
+  `permission` block gates it. A body path outside the agent's allowed dirs
+  surfaces an `ask` prompt at call time, and since frontmatter is preserved
+  verbatim you cannot widen the allow-list as a side effect. Either leave
+  the body on the permitted path, or flag the permission change the repoint
+  requires and get the user's explicit OK before making it.

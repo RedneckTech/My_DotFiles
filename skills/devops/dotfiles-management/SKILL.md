@@ -142,6 +142,19 @@ safe one when a machine has existing-file conflicts.
    re-applies the stashed edit to the new path. Verify with `git diff` on the
    renamed file afterward.
 
+7. **Only `home/` and `host-<hostname>/` are stow packages — a top-level repo
+   dir is NOT.** `skills/` and `sys_docs/` sit at the repo root, git-tracked
+   but never linked into `~`; that is deliberate (agents read them by repo
+   path). To make a NEW tree appear in `~`, it must live UNDER a package:
+   `home/ai/` links to `~/ai/`, a root-level `ai/` links to nothing. Never
+   `stow` a root-level dir to "make it visible" — stow links its CONTENTS into
+   `~` (`~/scripts`, `~/references`, even `~/README.md`). Move the tree under
+   `home/` instead (`git mv ai home/ai`), then update the path references
+   inside its own docs and any mirrored copy to the new `~/<name>/` location.
+   `--no-folding` links into a PRE-EXISTING real directory without clobbering
+   its unmanaged files, so a `~/ai/` that already held other files is fine as
+   long as no individual target filename collides.
+
 ## Secrets convention
 
 Secrets live in gitignored `.env` files under the repo (e.g.

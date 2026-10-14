@@ -116,8 +116,11 @@ RESET key — or a host command carrying the reset flag — clears a lock.
   Re-check `pgrep -x x3270` at the start of each turn and relaunch if dead.
 - Only ONE x3270 session at a time. `pgrep -x x3270` first and reuse a live
   session; a second x3270 against the same 3270 user logs the first one out
-  and two processes fight over the fifo. (`-x` exact name, never `pgrep -f`,
-  which self-matches your own shell.) A fifo write BLOCKS when the reader
+  and two processes fight over the fifo. (`-x` exact name, never `pgrep -f`
+  or `pkill -f` with a pattern that also appears in your own command line —
+  `pkill -f 'sleep 86400'` matches the shell running it and SIGTERMs your
+  own call. Bracket one character to break the self-match:
+  `pkill -f 'sleep 8640[0]'`.) A fifo write BLOCKS when the reader
   (x3270) is gone — if the session died, `pgrep -x x3270` is empty and the
   next write hangs forever. Re-check `pgrep -x x3270` before driving and
   relaunch the session + keeper if it is dead.
@@ -151,5 +154,5 @@ https://x3270.miraheze.org/wiki/3270_data_stream_protocol ("Keyboard lock
 and reset" section).
 
 The user's 3270BBS dev environment (login, menus, ISPF editor coordinates,
-recovery, and TIMESHARING BASIC language gotchas incl. DEF FN) is in
-`references/3270bbs.md`.
+recovery, updating the host to a new release, and TIMESHARING BASIC
+language gotchas incl. DEF FN) is in `references/3270bbs.md`.

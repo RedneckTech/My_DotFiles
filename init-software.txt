@@ -1,0 +1,52 @@
+# init-software.txt
+# Software installed outside the default Kubuntu 24.04 install
+# Generated 2026-09-11
+
+## 1. Manually downloaded binaries (reinstall by hand)
+# ~/.local/bin/
+zig
+zls                      # Zig language server
+lua-language-server     # wrapper -> ~/.local/opt/lua-language-server
+
+# /usr/local/bin/
+iso_extractor            # own bash script
+
+# ~/bin/ (own scripts)
+arcman
+cpp.sh
+mvp.sh
+note.sh
+personal_financial_report.py
+whereis.sh
+
+# AppImage
+cursor-0.33.4x86_64.AppImage   # ~/Documents/System_Setup_Docs/User_Packages/
+
+## 2. Homebrew (Linuxbrew)
+# brew install:
+fastfetch
+glances
+gum
+lazygit
+ripgrep
+shellcheck
+starship
+superfile
+# brew install --cask:
+codex
+
+## 3. Flatpak
+RetroArch              # flatpak install flathub org.libretro.RetroArch
+
+## 4. Snap
+bash-language-server   # classic
+discord
+ghostty                # classic
+marktext
+
+## 5. Apt (manually installed apps; system packages omitted)
+sudo apt install \
+  alacritty c3270 clamav clangd eza fzf git htop librewolf micro nala \
+  nvtop p7zip-full qbittorrent radeontop rclone rofi shfmt steam stow \
+  tldr tree unrar vlc x3270 xbindkeys yakuake zoxide \
+  fcitx5-chinese-addons fcitx5-frontend-all fcitx5-material-color kde-config-fcitx5
