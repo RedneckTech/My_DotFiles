@@ -41,11 +41,12 @@ tools `ripgrep`, `shellcheck`, `fastfetch`, `glances`, `gum`, `lazygit`,
 `codegraph cua-driver fbc gen-llms-txt.py github-mcp-server hermes hermes-acp
 hermes-agent inv invoke llmdoc lua-language-server markitdown-mcp
 mcp-filesystem-server mcp-server-memory mcp-server-sequential-thinking node
-npm npx playwright-mcp tealdeer terminal-driver-mcp zig zls`
+npm npx playwright-mcp tealdeer terminal-driver-mcp tldr zig zls`
 
 This is the agent/toolchain layer (Hermes, its MCP servers, uv-installed
-tools, language servers). `uv` itself lives at `~/.hermes/bin/uv`. See
-`../AI_DOCs/02-opencode.md` for how the MCP servers wire into OpenCode.
+tools, language servers). `uv` itself lives at `~/.hermes/bin/uv`. The MCP
+servers wire into both OpenCode (`../AI_DOCs/02-opencode.md`) and Hermes
+(`../AI_DOCs/04-hermes-agent.md`).
 
 `tealdeer` (the `tldr` client) is a manual GitHub-release binary because the
 apt `tldr`/`tealdeer` (< 1.8.0) are broken — `tldr.sh/assets/tldr.zip` now

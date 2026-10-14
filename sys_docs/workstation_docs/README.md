@@ -31,12 +31,13 @@ output as of 2026-10-14.
 
 `../AI_DOCs/` documents the AI/LLM stack (OpenCode, Hermes, Claude Code, Codex,
 LLMDoc, and the local llama.cpp model) that runs *on top of* this workstation.
-This directory documents the host itself — the two are complementary. Two
+This directory documents the host itself — the two are complementary. Three
 things bridge them: the LLMDoc pipeline (`llmdoc-serve`; see
 [04-systemd-and-services](./04-systemd-and-services.md) and
-`../AI_DOCs/03-llmdoc-pipeline.md`), and the ROCm + local LLM stack
+`../AI_DOCs/03-llmdoc-pipeline.md`), the ROCm + local LLM stack
 (documented as hardware/software here, as the inference pipeline in
-`../AI_DOCs/07-local-llm.md`).
+`../AI_DOCs/07-local-llm.md`), and the MCP servers (binaries in `~/.local/bin`
+here, wiring in `../AI_DOCs/02-opencode.md` and `../AI_DOCs/04-hermes-agent.md`).
 
 ## Conventions
 
