@@ -10,6 +10,7 @@ zls                      # Zig language server
 lua-language-server      # wrapper -> ~/.local/opt/lua-language-server
 fbc                      # FreeBASIC compiler 1.10.1
 nvtop                    # v3.3.2 (newer than apt's 3.0.2)
+tealdeer                 # tldr client 1.9.0 (GitHub release binary); `tldr` symlinks here
 github-mcp-server        # MCP server (Go binary)
 mcp-filesystem-server    # MCP server (Go binary)
 gen-llms-txt.py          # own script
@@ -72,7 +73,7 @@ sudo apt install \
   alacritty c3270 clamav clangd cmake eza fzf git htop iverilog librewolf \
   libudev-dev libvirt-clients libvirt-daemon-system mesa-vulkan-drivers micro \
   nala ninja-build nvtop ovmf p7zip-full python3-pylsp qbittorrent \
-  qemu-system-x86 radeontop rclone rofi rocm-hip-sdk shfmt steam stow tldr \
+  qemu-system-x86 radeontop rclone rofi rocm-hip-sdk shfmt steam stow \
   tree unrar verilator virt-manager vlc x3270 xbindkeys \
   xserver-xorg-video-amdgpu yakuake zoxide \
   fcitx5-chinese-addons fcitx5-frontend-all fcitx5-material-color kde-config-fcitx5

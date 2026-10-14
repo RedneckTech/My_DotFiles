@@ -5,7 +5,7 @@ before upgrading it, or you'll break a symlink / leave an orphan.
 
 | Manager | Prefix / scope | Notes |
 |---------|---------------|-------|
-| **apt** (`dpkg`) | system | 118 manually-installed packages (the base + user apps) |
+| **apt** (`dpkg`) | system | 117 manually-installed packages (the base + user apps) |
 | **ROCm** (AMD apt repo) | `/opt/rocm-7.2.4` | HIP SDK 7.2.4, `repo.radeon.com` pinned above `universe` (local LLM compute) |
 | **Homebrew** | `/home/linuxbrew/.linuxbrew` | 261 formulae (~20 top-level; the Qt6/mesa/ffmpeg stack lives here) |
 | **snap** | `/snap` | 6 user apps + bases |
@@ -41,11 +41,16 @@ tools `ripgrep`, `shellcheck`, `fastfetch`, `glances`, `gum`, `lazygit`,
 `codegraph cua-driver fbc gen-llms-txt.py github-mcp-server hermes hermes-acp
 hermes-agent inv invoke llmdoc lua-language-server markitdown-mcp
 mcp-filesystem-server mcp-server-memory mcp-server-sequential-thinking node
-npm npx playwright-mcp terminal-driver-mcp zig zls`
+npm npx playwright-mcp tealdeer terminal-driver-mcp zig zls`
 
 This is the agent/toolchain layer (Hermes, its MCP servers, uv-installed
 tools, language servers). `uv` itself lives at `~/.hermes/bin/uv`. See
 `../AI_DOCs/02-opencode.md` for how the MCP servers wire into OpenCode.
+
+`tealdeer` (the `tldr` client) is a manual GitHub-release binary because the
+apt `tldr`/`tealdeer` (< 1.8.0) are broken — `tldr.sh/assets/tldr.zip` now
+serves an HTML redirect, so `--update` fails with "Could not find central
+directory end". tealdeer ≥ 1.8.0 downloads from the GitHub releases asset.
 
 ## uv tools (`uv tool list`)
 
@@ -85,12 +90,12 @@ editor), `thunderbird`, `bash-language-server`. Plus snap bases/runtimes
 
 ## apt — notable manually-installed packages
 
-Grouped (full manual list is 118 packages):
+Grouped (full manual list is 117 packages):
 
 - **Desktop env**: `kubuntu-desktop`, `kubuntu-wallpapers`, `kde-config-fcitx5`.
 - **Terminals/editors/launchers**: `alacritty`, `yakuake`, `micro`, `rofi`.
 - **Dev tooling**: `shellcheck`, `shfmt`, `python3-pylsp`, `clangd`, `stow`,
-  `eza`, `zoxide`, `fzf`, `tldr`, `nala`, `cmake`, `ninja-build`.
+  `eza`, `zoxide`, `fzf`, `nala`, `cmake`, `ninja-build`.
 - **FPGA/Verilog**: `iverilog` (12.0), `verilator` (5.020).
 - **BBS/3270**: `x3270`, `c3270`.
 - **Media/gaming**: `vlc`, `steam:i386`, `qpittorrent`, emulators via flatpak
@@ -107,7 +112,7 @@ Grouped (full manual list is 118 packages):
   `fcitx5-material-color`.
 - **Security/util**: `clamav`, `mokutil`, `htop`, `tree`.
 - **CLI niceties** (also some via brew): `fzf`, `ripgrep`, `eza`, `zoxide`,
-  `tldr`, `gum`, `lazygit`, `superfile`.
+  `gum`, `lazygit`, `superfile`.
 
 ## Language servers (LSP) present
 
