@@ -7,7 +7,7 @@ browser automation, cron, and messaging-gateway work.
 
 | Thing | Path |
 |-------|------|
-| Config | `~/.hermes/config.yaml` → symlinks to `~/.user_config/home/.hermes/config.yaml` |
+| Config | `~/.hermes/config.yaml` (regular file; repo copy at `~/.user_config/host-jacob-x570aorusultra/.hermes/config.yaml`, synced via `cp`) |
 | Personality | `~/.hermes/SOUL.md` → symlinks to `~/.user_config/home/.hermes/SOUL.md` |
 | Secrets | `~/.hermes/.env` |
 | State DB | `~/.hermes/state.db` (SQLite) |
@@ -38,11 +38,29 @@ The `.env` is a large template (many providers document-stubbed with comments).
 ```
 OPENCODE_GO_API_KEY
 OPENCODE_ZEN_API_KEY
+GITHUB_PERSONAL_ACCESS_TOKEN
 ```
 
 Most other provider sections (Fireworks, OpenRouter, NovitaAI, Gemini, Ollama
 Cloud, GLM, Kimi, Arcee, MiniMax, Hugging Face, DeepInfra, Tencent, etc.) are
 present but commented out — available to enable by adding a key.
+
+## MCP servers
+
+Four stdio MCP servers are wired into Hermes (native MCP client, `mcp_servers`
+key in `config.yaml`), mirroring the OpenCode set:
+
+| Server | Command | Notes |
+|--------|---------|-------|
+| `filesystem` | `~/.local/bin/mcp-filesystem-server` | roots `/home/jpfeiff`, `/tmp`, `/media/jpfeiff` (14 tools) |
+| `github` | `~/.local/bin/github-mcp-server stdio` | `GITHUB_PERSONAL_ACCESS_TOKEN` via `${...}` placeholder resolved from `.env` (44 tools) |
+| `sequential-thinking` | `node .../server-sequential-thinking/dist/index.js` | 1 tool |
+| `markitdown` | `~/.local/bin/markitdown-mcp` | 1 tool |
+
+Tools register as `mcp_<server>_<tool>`. The github token is stored as the
+`${GITHUB_PERSONAL_ACCESS_TOKEN}` placeholder (resolved from `~/.hermes/.env`
+at runtime), not hardcoded. Add/remove with `hermes mcp add` / `hermes mcp
+remove`; changes need a session restart or `/reload-mcp`.
 
 ## Platform toolsets
 

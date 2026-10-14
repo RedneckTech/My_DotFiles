@@ -51,3 +51,13 @@ than editing the old list by hand.
 - **A package can be installed two ways at once** (e.g. `nvtop` in apt AND a
   newer manual binary in `~/.local/bin/`). Note the version difference in the
   manual-binary section rather than silently dropping one.
+- **A CLI tool's `--update` can fail with a decompression error when its
+  upstream download URL is deprecated.** "Could not find central directory
+  end" / "invalid Zip archive" means the client downloaded HTML (a redirect
+  page) instead of the archive — not a local unzip problem. Check the URL with
+  `curl -sIL`; if it 301s to an HTML page, the asset moved. Replace the client
+  with a newer upstream release binary rather than debugging unzip. Concrete
+  case: `tldr.sh/assets/tldr.zip` is deprecated, so the apt `tldr` (Haskell)
+  and `tealdeer` < 1.8.0 both fail `--update`; install `tealdeer` ≥ 1.8.0 from
+  GitHub releases (prebuilt `tealdeer-linux-x86_64-musl`, verify sha256) to
+  `~/.local/bin/` and symlink `tldr` → `tealdeer`.

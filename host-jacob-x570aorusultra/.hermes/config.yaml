@@ -70,15 +70,56 @@ streaming:
   enabled: false
 skills:
   creation_nudge_interval: 15
+  create_dir: ~/.user_config/skills
+  external_dirs:
+    - ~/.user_config/skills
 agent:
   max_turns: 500
   verbose: false
   reasoning_effort: medium
-  reasoning_overrides: {}
   service_tier: ''
   fast_auto_seconds: 60
   personalities: {}
 gateway:
+  signal_interrupt_grace_timeout: 1
+  delivery_ledger: true
+  platform_connect_timeout: 30
+  loop_watchdog: true
+  loop_watchdog_probe_interval_s: 30.0
+  loop_watchdog_probe_timeout_s: 10.0
+  loop_watchdog_max_strikes: 3
+  allow_all_users: false
+  bot_loop_guard:
+    enabled: true
+    max_events: 20
+    window_seconds: 300
+    cooldown_seconds: 600
+  startup_watchdog: true
+  startup_watchdog_timeout_seconds: 300
+  write_sessions_json: true
+  multiplex_profiles: true
+  auto_multiplex_migration: true
+  profile_routes: []
+  scale_to_zero:
+    idle_timeout_minutes: 2
+  restart_loop_guard:
+    max_restarts: 3
+    window_seconds: 60
+    max_gap_seconds: 300
+  respawn_storm:
+    max_starts: 5
+    window_seconds: 120
+  message_timestamps:
+    enabled: false
+  max_inbound_media_bytes: 134217728
+  trust_env: true
+  strict: false
+  media_delivery_allow_dirs: []
+  trust_recent_files: true
+  trust_recent_files_seconds: 600
+  api_server:
+    max_concurrent_runs: 10
+    history_tool_output_max_chars: 0
 platform_toolsets:
   cli:
     - hermes-cli
@@ -133,6 +174,7 @@ telemetry:
   shared_metrics:
     enabled: false
     send: false
+    offer_version: 2
 updates:
   check: true
   pre_update_backup: false
@@ -144,3 +186,40 @@ onboarding:
     busy_input_prompt: true
 approvals:
   destructive_slash_confirm: false
+known_plugin_toolsets:
+  acp:
+    - homeassistant
+  webhook:
+    - homeassistant
+_left_core_scoped:
+  - homeassistant
+plugins:
+  enabled:
+    - homeassistant
+  disabled: []
+_left_core_installed:
+  - homeassistant
+_config_version: 50
+mcp_servers:
+  filesystem:
+    command: /home/jpfeiff/.local/bin/mcp-filesystem-server
+    args:
+      - /home/jpfeiff
+      - /tmp
+      - /media/jpfeiff
+    enabled: true
+  github:
+    command: /home/jpfeiff/.local/bin/github-mcp-server
+    args:
+      - stdio
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+    enabled: true
+  sequential-thinking:
+    command: /home/jpfeiff/.local/bin/node
+    args:
+      - /home/jpfeiff/.local/lib/node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js
+    enabled: true
+  markitdown:
+    command: /home/jpfeiff/.local/bin/markitdown-mcp
+    enabled: true
