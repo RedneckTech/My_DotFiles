@@ -155,6 +155,13 @@ safe one when a machine has existing-file conflicts.
    its unmanaged files, so a `~/ai/` that already held other files is fine as
    long as no individual target filename collides.
 
+## Reinstall checklist (`init-software.txt`)
+
+`init-software.txt` at the repo root is the reinstall checklist for software
+outside the default Kubuntu install. To regenerate it from the live system
+(which commands to run, what to filter out of `apt-mark showmanual` / `brew
+list` / `snap list`), see `references/init-software-checklist.md`.
+
 ## Secrets convention
 
 Secrets live in gitignored `.env` files under the repo (e.g.
