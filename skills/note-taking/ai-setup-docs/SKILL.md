@@ -34,9 +34,12 @@ the task. The convention is recorded in persistent memory.
 - Source of truth is the git repo `~/.user_config/` (remote
   `git@github.com:RedneckTech/My_DotFiles.git`, branch `master`).
 - Live configs are SYMLINKS into that repo (not copies): `~/.bashrc`,
-  `~/.config/starship.toml`, `~/.hermes/config.yaml`, `~/.hermes/SOUL.md`,
+  `~/.config/starship.toml`, `~/.hermes/SOUL.md`,
   `~/.config/opencode/{opencode.jsonc,package.json,agents/*.md}`,
-  `~/.claude/skills`.
+  `~/.claude/skills`. EXCEPTION: `~/.hermes/config.yaml` is a REGULAR file
+  (Hermes rewrites it at runtime) — its repo copy lives at
+  `host-<hostname>/.hermes/config.yaml` and is synced with `cp`, never a
+  symlink (stow skips it via `.stow-local-ignore`).
 - OpenCode secrets: `~/.user_config/home/.config/opencode/.env` (sourced by
   `~/.bashrc` line ~265). Hermes secrets: `~/.hermes/.env`.
 - LLMDoc active index is DuckDB at `~/.local/share/llmdoc/index.db` (NOT
@@ -53,8 +56,8 @@ Run these to rediscover the live state before editing docs:
 cat ~/.user_config/home/.config/opencode/opencode.jsonc
 ls ~/.user_config/home/.config/opencode/agents/
 
-# Hermes
-cat ~/.user_config/home/.hermes/config.yaml
+# Hermes (live config is a regular file; repo copy at host-<hostname>/.hermes/config.yaml)
+cat ~/.hermes/config.yaml
 
 # Codex / Claude
 cat ~/.codex/config.toml

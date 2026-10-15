@@ -55,6 +55,50 @@ Pin the host compiler to gcc/g++ — otherwise a Homebrew clang on PATH (e.g. /h
 
 Fully-offloaded model runs at full GPU speed; anything larger spills to CPU and drops multi-x. "Coding + sysadmin" → 14B coder model (e.g. Qwen2.5-Coder) is the speed/quality sweet spot. GGUFs from the model author's official HF repo (e.g. `Qwen/Qwen2.5-Coder-14B-Instruct-GGUF`).
 
+### 5b. Download the model (GGUF vs full-precision)
+
+GGUF (the common case) — grab the quantized file directly:
+
+```bash
+# hf CLI (install once: uv tool install huggingface_hub)
+hf download <repo> <file.gguf> --local-dir ~/models
+# or a single public file with curl:
+curl -L -o ~/models/model.gguf "https://huggingface.co/<repo>/resolve/main/<file>.gguf"
+```
+
+Gated models (Llama, Mistral, …) need auth: `export HF_TOKEN=...` or `hf auth login`.
+
+Full-precision (safetensors) — when the user asks for the FULL model, not a
+quant. Raw weights are ~2 bytes/param (a 27B model ≈ 55 GB across ~18 shards),
+and llama.cpp cannot load safetensors — convert to an F16 GGUF (same size, no
+quantization loss):
+
+```bash
+hf download <repo> --local-dir <dir>          # all shards + configs
+python ~/llama.cpp/convert_hf_to_gguf.py <dir> --outfile <dir>-f16.gguf --outtype f16
+```
+
+F16 GGUF ≈ BF16 safetensors in size; Q8_0 is the near-lossless smaller option
+(~half). A "full model" request means F16, not a Q4/Q5/Q8 quant.
+
+Probe the repo before committing to a download:
+- `curl -s https://huggingface.co/api/models/<repo>` → `gated` / `private` /
+  `siblings` confirm it exists and whether it needs a token.
+- Size: `curl -s https://huggingface.co/api/models/<repo>/tree/main?recursive=true`
+  and sum the `.safetensors` sizes. Use `?recursive=true` — the non-recursive
+  tree returns 0-byte totals for diffusion-style repos whose shards live under
+  `text_encoder/`, `transformer/`, `vae/` subdirs. Not every HF repo is a model
+  (datasets/notebooks/Spaces); the `siblings` list is the tell.
+
+Download notes:
+- The `hf` CLI reads `HF_TOKEN`, not the user's `MCP_HUGGING_FACE_API_KEY` —
+  `export HF_TOKEN=<value from .env>` first for gated or rate-limited repos
+  (unauthenticated downloads are capped and slower).
+- Batch many repos in one background process (`for r in repo:dir; do hf download
+  "$r" --local-dir "$d"; done`); report progress by polling `du -sb <dir>` —
+  in-flight files sit in `<dir>/.cache/` so the visible dir size lags until hf
+  moves each file into place.
+
 ### 6. Verify + tune
 ```bash
 ./build/bin/llama-bench -m model.gguf          # tok/s, confirm VRAM offload
