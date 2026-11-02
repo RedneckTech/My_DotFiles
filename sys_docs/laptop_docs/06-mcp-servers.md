@@ -137,6 +137,43 @@ is what gets used.
   `llmdoc-serve` systemd unit + `gen-llms-txt.py` sources, flipping `enabled`
   to true, and restoring the per-agent `llmdoc_*` grants.
 
+## Hermes MCP servers (native client)
+
+Hermes has its own MCP client (`mcp_servers` in `~/.hermes/config.yaml`),
+separate from OpenCode's `opencode.jsonc`. As of 2026-11-02 this laptop mirrors
+the workstation's six-server setup (see
+[`../AI_DOCs/04-hermes-agent.md`](../AI_DOCs/04-hermes-agent.md)):
+
+| Server | Command / endpoint | Tools | Status |
+|--------|--------------------|-------|--------|
+| `filesystem` | `~/.local/bin/mcp-filesystem-server` (roots `~`, `/tmp`, `/media/jpfeiff`) | 14 | ✓ enabled |
+| `github` | `~/.local/bin/github-mcp-server stdio` | 45 | ✓ enabled |
+| `sequential-thinking` | `node …/server-sequential-thinking/dist/index.js` | 1 | ✓ enabled |
+| `markitdown` | `~/.local/bin/markitdown-mcp` | 1 | ✓ enabled |
+| `globalping` | `https://mcp.globalping.dev/mcp` (OAuth) | — | ⏳ pending login |
+| `hugging_face` | `https://huggingface.co/mcp` (Bearer) | — | ⏳ pending token |
+
+The four stdio servers were added with `hermes mcp add` (discovery-first) and
+each returned a valid `initialize` + `tools/list` probe. Tools register as
+`mcp_<server>_<tool>` and load on the next session start (or `/reload-mcp`).
+
+The two remote servers are manual steps (credentials are not on disk):
+
+- **globalping** — OAuth 2.1. Run `hermes mcp add globalping --url
+  https://mcp.globalping.dev/mcp` in an interactive terminal (or
+  `hermes mcp login globalping` once registered); the OAuth browser flow cannot
+  complete non-interactively.
+- **hugging_face** — Bearer token. Create a read-scope token at
+  https://huggingface.co/settings/tokens, then
+  `hermes mcp add hugging_face --url https://huggingface.co/mcp --auth header`
+  (stores `MCP_HUGGING_FACE_API_KEY` in `~/.hermes/.env`).
+
+`GITHUB_PERSONAL_ACCESS_TOKEN` was added to `~/.hermes/.env` (copied from the
+OpenCode `.env`, `export`-ed, mode `600`) so Hermes' github server resolves the
+`${GITHUB_PERSONAL_ACCESS_TOKEN}` placeholder. The live config is synced to
+`host-jacob-82jw/.hermes/config.yaml` via `cp` (not a symlink — see
+[03](./03-configs-and-dotfiles.md)).
+
 ## Notes / gotchas
 
 - Node's global prefix is Hermes-managed

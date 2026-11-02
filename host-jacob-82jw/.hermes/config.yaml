@@ -7,7 +7,7 @@
 # Schema version of this file. The installers copy it to seed config.yaml, and
 # `hermes update` uses it to know which one-time migrations the file already
 # has. Hermes manages it: do not copy it into another config.
-_config_version: 49
+_config_version: 52
 
 # =============================================================================
 # Database Configuration
@@ -54,6 +54,9 @@ plugins:
 # =============================================================================
 # Model Configuration
 # =============================================================================
+  enabled:
+    - homeassistant
+  disabled: []
 model:
   # Default model to use (can be overridden with --model flag)
   # Both "default" and "model" work as the key name here.
@@ -282,31 +285,6 @@ browser:
   # Let an authenticated browser extension register as the controller for an
   # existing Hermes session. Disabled by default. Local API registration also
   # requires the API server bearer key to be configured.
-  extension_control:
-    enabled: false
-
-  # Maximum characters of snapshot content before truncate-and-store.
-  # Increase for long pages (for example, documentation or financial reports),
-  # or decrease to reduce context usage. Minimum: 1000; default: 15000
-  # (same per-page budget as web_extract).
-  # snapshot_threshold: 15000
-
-  # JavaScript evaluation guardrails (both default false). restrict_evaluate
-  # opts into a denylist that blocks sensitive primitives (cookies, storage,
-  # clipboard, network, form values) in browser_console(expression=...) — use
-  # it when the agent drives a logged-in profile. allow_unsafe_evaluate is the
-  # legacy override that switches the denylist back off even when restrict is on.
-  # restrict_evaluate: false
-  # allow_unsafe_evaluate: false
-
-# =============================================================================
-# Tool Loop Guardrails
-# =============================================================================
-# Soft warnings are enabled by default. They append guidance to repeated failed
-# or non-progressing tool results but still let the tool execute. Hard stops stay
-# opt-in for interactive CLI/TUI/Desktop/ACP sessions, but default on for unattended
-# gateway/cron sessions where nobody is present to interrupt a model that
-# ignores loop warnings.
 tool_loop_guardrails:
   warnings_enabled: true
   hard_stop_enabled: false
@@ -1026,6 +1004,47 @@ agent:
 # Gateway Lifecycle
 # =============================================================================
 gateway:
+  unmanaged_idle_exit_seconds: 600
+  signal_interrupt_grace_timeout: 1
+  service_install_choice:
+  delivery_ledger: true
+  platform_connect_timeout: 30
+  loop_watchdog: true
+  loop_watchdog_probe_interval_s: 30.0
+  loop_watchdog_probe_timeout_s: 10.0
+  loop_watchdog_max_strikes: 3
+  allow_all_users: false
+  bot_loop_guard:
+    enabled: true
+    max_events: 20
+    window_seconds: 300
+    cooldown_seconds: 600
+  startup_watchdog: true
+  startup_watchdog_timeout_seconds: 300
+  write_sessions_json: true
+  multiplex_profiles: true
+  auto_multiplex_migration: true
+  profile_routes: []
+  scale_to_zero:
+    idle_timeout_minutes: 2
+  restart_loop_guard:
+    max_restarts: 3
+    window_seconds: 60
+    max_gap_seconds: 300
+  respawn_storm:
+    max_starts: 5
+    window_seconds: 120
+  message_timestamps:
+    enabled: false
+  max_inbound_media_bytes: 134217728
+  trust_env: true
+  strict: false
+  media_delivery_allow_dirs: []
+  trust_recent_files: true
+  trust_recent_files_seconds: 600
+  api_server:
+    max_concurrent_runs: 10
+    history_tool_output_max_chars: 0
   # Post-interrupt grace for running agents during an unexpected SIGTERM.
   # Adapter, bridge, and database teardown starts after this many seconds even
   # if an agent has not unwound. Keep it below the service-manager stop budget.
@@ -1810,6 +1829,7 @@ telemetry:
 # =============================================================================
 # Login Policy (credentials themselves live in auth.json / .env)
 # =============================================================================
+    offer_version: 2
 auth:
   # Borrow and refresh the Codex CLI (~/.codex/auth.json) and Claude Code logins when Hermes has
   # no usable login of its own. Their refresh tokens are single-use, so two programs on one login
@@ -2000,3 +2020,35 @@ onboarding:
     tool_progress_prompt: true
 approvals:
   destructive_slash_confirm: false
+known_plugin_toolsets:
+  acp:
+    - homeassistant
+  webhook:
+    - homeassistant
+_left_core_scoped:
+  - homeassistant
+_left_core_installed:
+  - homeassistant
+mcp_servers:
+  filesystem:
+    command: /home/jpfeiff/.local/bin/mcp-filesystem-server
+    args:
+      - /home/jpfeiff
+      - /tmp
+      - /media/jpfeiff
+    enabled: true
+  github:
+    command: /home/jpfeiff/.local/bin/github-mcp-server
+    args:
+      - stdio
+    env:
+      GITHUB_PERSONAL_ACCESS_TOKEN: ${GITHUB_PERSONAL_ACCESS_TOKEN}
+    enabled: true
+  sequential-thinking:
+    command: /home/jpfeiff/.local/bin/node
+    args:
+      - /home/jpfeiff/.local/lib/node_modules/@modelcontextprotocol/server-sequential-thinking/dist/index.js
+    enabled: true
+  markitdown:
+    command: /home/jpfeiff/.local/bin/markitdown-mcp
+    enabled: true

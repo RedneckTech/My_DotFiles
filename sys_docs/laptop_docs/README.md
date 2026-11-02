@@ -28,8 +28,9 @@ settings, and the MCP server setup. Grounded in live
 - **Dotfiles**: git repo `~/.user_config/` (remote `RedneckTech/My_DotFiles`),
   stowed via GNU Stow — shared `home/` + per-host `host-<hostname>/` packages;
   see [03](./03-configs-and-dotfiles.md).
-- **MCP**: 10 OpenCode MCP servers installed + verified 2026-09-26 (see
-  [06](./06-mcp-servers.md)).
+- **MCP**: 10 OpenCode MCP servers installed + verified 2026-09-26, plus 4 of
+  the workstation's 6 Hermes MCP servers wired 2026-11-02 (2 pending manual
+  auth) — see [06](./06-mcp-servers.md).
 
 ## Relationship to the other docs
 
