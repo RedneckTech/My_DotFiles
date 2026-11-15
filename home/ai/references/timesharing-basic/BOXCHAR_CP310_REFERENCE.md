@@ -113,25 +113,42 @@ not render; fall back to ASCII `+ - |`.
 
 ## Rendering caveat (important)
 
-The functions return the correct Unicode characters, but **x3270 is not a
-CP310-capable terminal for these graphics.** Verified: a double-line box
-drawn with `CP310$(7)+CP310$(11)+CP310$(11)+CP310$(8)` shows as `■  ■` on
-screen even though the bytes are the correct `╔ ═ ═ ╗`.
+The functions return the correct Unicode characters, but the emulators map
+only a subset to glyphs. **x3270 and c3270 v4.1ga10 render exactly the same
+subset** — c3270 does not improve it. Re-tested on c3270 specifically:
 
-Why: x3270 v4.1ga10's host code page list does NOT include CP310 (it has
-cp037, cp273, ..., and `bracket` as the default). x3270 has *some* CP310
-support via the "Graphic Escape" (X'08') mechanism, but that is for APL
-symbols (underlined letters A-Z), not the box-drawing/graphics characters
-that `CP310$` returns. So the double-line set (7-12) and double-line
-junctions (18-20) have no mapping and fall back to `■`.
+- c3270 has **no CP310 code page**: `c3270 -codepage cp310` exits with
+  `Warning: Cannot find code page "cp310"`. Its code-page list is the same
+  as x3270's (cp037 … cp1160, `bracket`).
+- The BBS sends the graphics as **3270 Graphic Escape** — the trace shows
+  `SUB SUB GraphicEscape 'b'` (`3F 3F 08 82`) — and the `bracket` charset
+  (CP037 modified) maps only the bracket-range glyphs, not the CP310
+  double-line/graphics set.
+- The BBS user record's code page is **CP437**, not CP310, and the User
+  Profile screen has no field to change it.
 
-Single-line box (BOXCHAR$, CP310$ 1-6), blocks (21-28), arrows (29-32),
-and shapes (33-36) all render correctly in x3270.
+Measured from an `Ascii` dump (identical in x3270 and c3270):
 
-Note the BBS's `$TermInfo` `codepage` reports `"310"` on this box, which is
-misleading — it means the BBS *believes* the terminal is CP310-capable (or
-defaults to 310), not that the emulator can actually render the graphics.
+| Range | Characters | Renders? |
+|---|---|---|
+| 1-6 | `┌ ┐ └ ┘ ─ │` | yes |
+| 7-10 | `╔ ╗ ╚ ╝` | **no** — `■ ■ ■ ■` |
+| 11-12 | `═ ║` | **no** — blank |
+| 13-17 | `├ ┤ ┬ ┴ ┼` | yes |
+| 18-20 | `╬ ╠ ╣` | **no** — `■ ■ ■` |
+| 21 | `█` | **no** — `■` |
+| 22-25 | `▀ ▄ ▌ ▐` | yes |
+| 26-28 | `░ ▒ ▓` | **no** — `■ ■ ■` |
+| 29-32 | `← → ↑ ↓` | yes |
+| 33 | `■` | partial — renders as `∎` |
+| 34-35 | `□ ●` | **no** — `■ ■` |
+| 36 | `○` | yes |
+| 37-44 | `▲ ▼ ◄ ► ╭ ╮ ╰ ╯` | **no** — all `■` |
+| 45-46 | `· •` | yes |
+| 47-49 | `╳ ╱ ╲` | **no** — all `■` |
+| 50 | `∙` | yes |
 
-So: use BOXCHAR$ (single-line) for portable boxes; reserve CP310$ 7-12 for
-terminals that actually support them (a real CP310-capable emulator or
-hardware 3270).
+So: use `BOXCHAR$` (single-line) for portable boxes; reserve the
+double-line set, the full block, the shades, and most shapes for a real
+CP310-capable emulator or hardware 3270 — neither x3270 nor c3270 shows
+them.
