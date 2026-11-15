@@ -35,7 +35,7 @@ mode: primary            # or subagent
 temperature: 0.2         # optional — only some agents set it
 permission:              # always present
   bash: allow
-  external_directory: ask
+  external_directory: ask   # or {"*": ask, "/path/**": allow} to whitelist doc dirs
   edit: allow
   read: allow
   webfetch: allow
@@ -166,3 +166,16 @@ stubs. A finished agent has these sections, in this order:
   new doc into `~/.user_config/home/ai/references/<subject>/`, symlink it
   into `~/ai/...`, and commit. Same for any helper script the body tells the
   agent to run — put it in `home/ai/scripts/`, not only in the project.
+- Wire a must-use doc set as a `references` entry, not just a path in the
+  body. In `opencode.jsonc`:
+  `"references": {"alias": {"path": "~/ai/references/<subject>", "description": "..."}}`.
+  OpenCode injects references that HAVE a `description` into agent context
+  and auto-allows their directories through the external-directory boundary;
+  a bare path plus `external_directory: ask` means the read prompts and gets
+  skipped, and the agent silently falls back to whatever it can reach
+  (usually the vendor manual). A reference without a description is not
+  advertised at all. Keep the reference dir's README index current too — a
+  stale index hides newly added docs from an agent that lists before opening.
+- A soft "read the relevant doc before coding" gets ignored. Make the rule
+  MANDATORY: name the start doc, add a task→doc table, and a "if you cannot
+  read them, STOP and report — do not guess" clause.

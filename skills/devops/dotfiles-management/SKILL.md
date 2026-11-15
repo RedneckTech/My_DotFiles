@@ -66,9 +66,13 @@ It lives in the shared `home/` stow package, so stow links the whole tree at
 Each dir carries its own `README.md` index. Both hold COPIES of a project's
 working copy (the project keeps the canonical one) — improve the project
 copy, then re-copy here so every machine gets it; the READMEs record which
-copy is canonical so the two don't silently diverge. `.gitignore` covers
-`__pycache__/` and `*.pyc` so bytecode from these scripts never gets
-committed.
+copy is canonical so the two don't silently diverge. Re-copy the WHOLE set
+and its `README.md`, not just the file you edited: an index that predates a
+new doc hides it from any agent that lists the directory before opening
+files, and a partial copy leaves old and new docs side by side. Verify with
+a diff loop (`for f in <src>/*.md; do diff -q "$f" "<dst>/$(basename $f)"; done`)
+before committing. `.gitignore` covers `__pycache__/` and `*.pyc` so
+bytecode from these scripts never gets committed.
 
 ## Core command
 
