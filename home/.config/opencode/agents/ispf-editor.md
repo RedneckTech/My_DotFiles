@@ -107,6 +107,19 @@ to 60s — poll `Ascii` patiently, do not send more actions (see Recovery).
 If the BBS is down, start it via `ssh 3270BBS` (see the 3270DEV agent)
 before opening a session.
 
+### c3270 sessions
+
+`uploader.py` speaks the x3270 fifo protocol (`/tmp/x3270.fifo`), so it
+requires an `x3270 -script` session (x3270 is X11-based and fails with
+"Can't open display" without one). A `c3270 -scriptport` session is NOT
+compatible with uploader.py. On a headless box (no X), drive the editor
+manually with
+`/media/jpfeiff/BlackBox/3270BBS/basic-learning/drive_c3270.py` (same
+actions, TCP; this path is inside your allowed tree) instead of
+uploader.py. c3270 also needs a pty
+(`script -qec /tmp/start_c3270.sh /tmp/c3270.ts`). The single-session
+rule still applies either way — one BBS session per user.
+
 ## Upload workflow
 
 1. Write (or receive) the source locally under `/tmp`, e.g. `/tmp/prog.bas`.
