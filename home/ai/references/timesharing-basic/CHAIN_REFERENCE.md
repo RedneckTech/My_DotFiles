@@ -1,13 +1,13 @@
-# Program Chaining — COMMON and CHAIN (v3.0.0)
+# Program Chaining — COMMON and CHAIN (v3.0.1)
 
 Everything below was verified by running it on the live interpreter.
 
 ## The model
 
 `CHAIN "prog"` loads and runs another program. When the chained program
-ends (via `END` or `STOP`), control returns to the calling program at the
-line AFTER the `CHAIN`. `COMMON` declares which variables survive the
-transition.
+ends (via `END`, or by running off its last line), control returns to the
+calling program at the line AFTER the `CHAIN`; `STOP` ends the whole run
+(v3.0.1). `COMMON` declares which variables survive the transition.
 
 ```
 main.bas:                          sub.bas:
@@ -68,10 +68,12 @@ but unnecessary for the callee.)
 - **Filename can be a variable:** `P$ = "sub"` then `CHAIN P$` works.
 - **Nonexistent program:** `CHAIN "nope"` → `?PROGRAM NOT FOUND: nope IN
   LINE n` (runtime error, program halts).
-- **STOP and END both return** to the caller. `STOP` in the chained program
-  terminates it and returns control, same as `END`.
-- **Depth:** at least 200 levels of self-chaining work (no small limit; the
-  manual lists the CHAIN stack as memory-bounded only).
+- **STOP ends the whole run** (v3.0.1; it used to return to the caller).
+  `END` returns to the caller.
+- **Label-mode callees work** (v3.0.1): a chained program in label mode
+  starts at its `START:` label (3.0.0 silently failed to run it).
+- **Depth:** limited to 256 levels (v3.0.1); self-chaining works within
+  that.
 
 ## Nested and recursive chaining
 
@@ -97,12 +99,12 @@ base case:
 
 ```
 COMMON var1, var2$        declare variables that persist across CHAIN
-CHAIN "prog"              load+run another program; return on its END/STOP
+CHAIN "prog"              load+run another program; return on its END
 CHAIN var$                filename from a string variable
 ```
 
 - COMMON is bidirectional; only the caller needs to declare it.
 - Without COMMON, variables reset to 0/"" in the callee.
 - Arrays, associative arrays, open files, and DEF FN functions all persist.
-- Nested and recursive chains work; depth is effectively unlimited.
+- Nested and recursive chains work; depth is limited to 256 (v3.0.1).
 - CHAIN to a missing program is a runtime error.

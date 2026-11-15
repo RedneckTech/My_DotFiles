@@ -1,4 +1,4 @@
-# Time & Date Functions — Complete Reference (v3.0.0)
+# Time & Date Functions — Complete Reference (v3.0.1)
 
 Everything below was verified by running it on the live interpreter.
 

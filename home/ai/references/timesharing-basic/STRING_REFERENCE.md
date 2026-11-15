@@ -1,4 +1,4 @@
-# String Functions — Complete Reference (v3.0.0)
+# String Functions — Complete Reference (v3.0.1)
 
 Everything below was verified by running it on the live interpreter.
 
@@ -12,9 +12,10 @@ Everything below was verified by running it on the live interpreter.
 | `MID$(s$,p,n)` | substring | 1-based; n omitted → to end; p>len → `""` |
 | `CHR$(n)` | char from code | `CHR$(65)`="A", `CHR$(97)`="a" |
 | `ASC(s$)` | code of 1st char | `ASC("ABC")`=65 |
-| `STR$(n)` | number→string | see the bug below |
+| `STR$(n)` | number→string | see the note below |
 | `VAL(s$)` | string→number | leading spaces ok; `VAL("abc")`=0 |
 | `SPACE$(n)` | n spaces | n=0 → `""`; caps at **255** |
+| `STRING$(n, c$)` | n copies of c$'s first char | n cut to 255; n<0/empty c$ → error |
 | `UCASE$(s$)` | uppercase | non-letters unchanged |
 | `LCASE$(s$)` | lowercase | |
 | `TRIM$(s$)` | strip both ends | |
@@ -25,36 +26,23 @@ Everything below was verified by running it on the live interpreter.
 
 `BOXCHAR$` / `CP310$` are covered in BOXCHAR_CP310_REFERENCE.md.
 
-## CRITICAL BUG: STR$ differs between compile-time and runtime
+## STR$ prefixes a space to non-negative numbers
 
-`STR$` prepends a space to **non-negative** numbers at runtime, but the
-optimizer's constant-folding omits it. The same expression gives different
-results depending on whether the argument is a literal:
-
-```
-STR$(5)          ' literal  -> "5"    (FUNC_PRECOMPUTE, no space)
-H = 5 : STR$(H)  ' variable -> " 5"   (runtime, leading space)
-```
-
-Verified at runtime: `STR$(0)`=`" 0"`, `STR$(1)`=`" 1"`, `STR$(12)`=`" 12"`,
-`STR$(100)`=`" 100"`, `STR$(3.5)`=`" 3.5"`, but `STR$(-5)`=`"-5"` (negatives
-have no leading space).
-
-The CHECK listing confirms the mechanism:
+`STR$` prepends a space to **non-negative** numbers, and (since 3.0.1) it
+behaves identically for literals and variables — the 3.0.0 optimizer bug
+(precomputing the literal without the space) is fixed.
 
 ```
-30   FUNC_PRECOMPUTE   STR$(5)     "5"
+STR$(5)          ' literal  -> " 5"
+H = 5 : STR$(H)  ' variable -> " 5"
+STR$(-5)         ' negative -> "-5"  (no leading space)
 ```
 
-Consequence: code that pads numbers with `RIGHT$("0" + STR$(n), 2)` works
-for literals but produces `" 5"` for variables. **Always wrap in `TRIM$`**:
+Consequence: always wrap in `TRIM$` when padding:
 
 ```basic
 RIGHT$("0" + TRIM$(STR$(n)), 2)      ' -> "05"  (correct)
 ```
-
-`LEN`, `ASC`, `CHR$`, and `VAL` were checked and are consistent between
-literal and variable — only `STR$` has this discrepancy.
 
 ## String length limit: 2048 bytes
 
@@ -114,11 +102,11 @@ Use `CHR$` to embed control/escape characters:
 "new" + CHR$(10) + "x" ' embedded newline
 ```
 
-## Does not exist
+## STRING$ (added in 3.0.1)
 
-- **`STRING$(n, char)`** — the manual mentions it, but it is NOT a function.
-  `STRING$(3, "*")` is parsed as an array reference and raises
-  `?ARRAY NOT DIMENSIONED: STRING$`.
+`STRING$(n, c$)` returns n copies of the first character of `c$`; with a
+number argument, n copies of `CHR$(code)`. n is cut to 255; n<0 or an empty
+c$ → `?ILLEGAL QUANTITY ERROR`. Verified: `STRING$(3, "*")` → `"***"`.
 
 ## Error messages (verified)
 
@@ -126,11 +114,10 @@ Use `CHR$` to embed control/escape characters:
 |-------|-------|
 | `?ILLEGAL QUANTITY ERROR` | `MID$(s$, 0, n)` — position must be ≥ 1 |
 | `?STRING TOO LONG (MAX 2048 BYTES)` | string exceeds 2048 bytes |
-| `?ARRAY NOT DIMENSIONED: STRING$` | using the non-existent `STRING$` function |
 
 ## Quick reference
 
 ```basic
-LEN LEFT$ RIGHT$ MID$ CHR$ ASC STR$ VAL SPACE$ UCASE$ LCASE$
+LEN LEFT$ RIGHT$ MID$ CHR$ ASC STR$ VAL SPACE$ STRING$ UCASE$ LCASE$
 TRIM$ LTRIM$ RTRIM$ INSTR REPLACE$
 ```

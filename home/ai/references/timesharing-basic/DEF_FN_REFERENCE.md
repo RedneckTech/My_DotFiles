@@ -1,8 +1,8 @@
-# DEF FN — User-Defined Functions in TIMESHARING BASIC (v3.0.0)
+# DEF FN — User-Defined Functions in TIMESHARING BASIC (v3.0.1)
 
 Everything below was verified by running it on the live dev server. The
-manual's DEF FN section is thin and contains at least one wrong example;
-this is the authoritative reference.
+manual's DEF FN section is now corrected in v3.0.1; this is the verified
+reference.
 
 ## Syntax
 
@@ -125,13 +125,15 @@ PRINT FND(0)      ' manual says 5, actual is 4
 `FND(0)` uses the parameter `X=0` (which shadows global `X=3`), so it
 computes `SQR(0^2 + 4^2)` = `4`, not `5`.
 
-## Variable-name collision: `FN` prefix is reserved
+## Variable-name collisions
 
-A variable whose name starts with `FN` cannot be used as a normal variable
-in an expression. `FNA = 100` stores fine (VARS shows it), but
-`PRINT FNA`, `PRINT FNA + 0`, `PRINT FNA * 1` all print blank — the parser
-treats `FNA` as a function reference, and with no function defined it
-evaluates to empty. Do not use `FN`-prefixed names for variables.
+- A variable whose name starts with `FN` cannot be used as a normal variable
+  in an expression. `FNA = 100` stores fine (VARS shows it), but
+  `PRINT FNA` prints blank — the parser treats `FNA` as a function
+  reference. Do not use `FN`-prefixed names for variables.
+- Since 3.0.1, built-in function names (`PI`, `LEN`, `DAY`, `TIMER`, ...)
+  also cannot be variables — `PI = 3.14159` →
+  `?PI IS A BUILT-IN FUNCTION - RENAME VARIABLE`.
 
 ## How many, and how big
 
@@ -156,25 +158,17 @@ manual's own examples loaded as `.bas` files). The `START:` label form is
 fine; the only label-mode caveat is that you must `LOAD` the program (you
 can't type it interactively — see NOTES.md).
 
-## The manual's RND example is broken
+## The manual's RND example (now correct)
 
-The manual's "Random number in range" example:
+`RND(1)` returns a random float in [0,1) again (v3.0.1), so the manual's
+random-in-range idiom works:
 
 ```basic
 DEF FNR(N) = INT(RND(1) * N + 1)
 ```
 
-does NOT produce random numbers. Because `RND(1)` returns `1`
-(deterministic — see LANGUAGE_REFERENCE.md), `FNR(10)` always returns
-`11`. Verified: five calls all printed `Random 1-10: 11`.
-
-The correct form uses `RND(0)` (a random float):
-
-```basic
-DEF FNR(N) = INT(RND(0) * N + 1)
-```
-
-which produces random integers in `1..N` (verified: `6 1 9 10 8`).
+For a random integer in `[1,N]` the simplest form is `RND(N)` directly.
+(The 3.0.0 behavior — `RND(1)` always 1, so this returned `N+1` — is fixed.)
 
 ## Usage patterns (all verified)
 

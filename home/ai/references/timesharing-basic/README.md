@@ -6,10 +6,11 @@ dev server and for documenting how to write quality code on it.
 ## What's here
 
 - `MANUAL_ERRATA_FOR_DEV.md` — **report for the BASIC/3270BBS developer**:
-  every place the shipped manual (v2.9.2) disagrees with the running
-  interpreter (v3.0.0), plus interpreter bugs found in testing.
+  the item-by-item resolution of the old manual-vs-interpreter mismatches
+  (all fixed in v3.0.1), the one remaining open item, and the 3.0.1
+  behavior changes.
 - `LANGUAGE_REFERENCE.md` — the full language reference: every statement,
-  function, command, error, and limit, all verified live against v3.0.0.
+  function, command, error, and limit, all verified live against v3.0.1.
   This is the authoritative doc.
 - `DEF_FN_REFERENCE.md` — deep dive on user-defined functions (`DEF FN`):
   naming, parameters, return types, scope, recursion, and gotchas.
@@ -22,22 +23,22 @@ dev server and for documenting how to write quality code on it.
 - `CHAIN_REFERENCE.md` — program chaining (`COMMON`/`CHAIN`): how variables
   cross program boundaries, what persists, nesting, and recursion.
 - `ISAM_REFERENCE.md` — indexed files: the four operations, status
-  functions, the schemaless record model, the `PUT`/`GET` array-reuse
-  gotcha, and the on-disk format.
+  functions, the schemaless record model, the PUT-clears-array semantics,
+  and the on-disk format.
 - `FILE_IO_REFERENCE.md` — sequential file I/O: OPEN modes, the 1-8 handle
   range, PRINT #/INPUT # semantics, error messages, and the buffered-write
   behavior.
 - `TIME_REFERENCE.md` — date/time functions: formats, SLEEP range, the
   STR$/TRIM$ padding gotcha, and the execution-time limit / SLEEP credit.
 - `STRING_REFERENCE.md` — string functions: every function with edge cases,
-  the 2048-byte string limit, the STR$ compile-time/runtime bug, and
+  the 2048-byte string limit, the STR$ leading-space behavior, and
   case-sensitive comparison.
 - `MATH_REFERENCE.md` — math functions and operators: RND's real semantics,
   operator precedence, error cases, and the missing ROUND/CEIL/FLOOR/MIN/MAX.
 - `STYLE_GUIDE.md` — how to write clean, maintainable BASIC (the code
   quality guide).
-- `NOTES.md` — gotchas, version differences (v3.0.0 vs the v2.9.2 manual),
-  and automation notes.
+- `NOTES.md` — gotchas and version differences (v3.0.1), and automation
+  notes.
 - `examples/` — runnable `.bas` programs with verified output.
 - `drive.py` — minimal helper to drive the persistent `x3270 -script`
   session (see below).

@@ -1,4 +1,4 @@
-# Sequential File I/O — Complete Reference (v3.0.0)
+# Sequential File I/O — Complete Reference (v3.0.1)
 
 Everything below was verified by running it on the live interpreter and by
 inspecting the resulting files byte-for-byte. (ISAM indexed files are a
@@ -12,19 +12,16 @@ OPEN "name.dat" FOR OUTPUT AS #1    ' write (truncates/creates)
 OPEN "name.dat" FOR APPEND AS #1    ' add to end (creates if missing)
 ```
 
-- **File names must end in `.dat`.** `.txt`, `.idx`, and anything else →
-  `?ILLEGAL FILE NAME`. (The manual claims `.dat` or `.idx`; in v3.0.0 only
-  `.dat` is accepted for sequential files.)
+- **File names must end in `.dat` or `.idx`.** `.txt` and anything else →
+  `?ILLEGAL FILE NAME`. (`.idx` is accepted since 3.0.1.)
 - No path separators allowed.
 - `APPEND` creates the file if it does not exist.
 
 ## File handles: 1-8, not 1-4
 
-**The valid handle range is `#1` through `#8`** — contradicting both the
-manual ("Use #1 through #4") and the error message itself
-(`?BAD FILE NUMBER (MUST BE 1-4)`). Verified: `#7` and `#8` work, `#9`
-fails. Up to **8 files can be open at once** (all 8 opened simultaneously in
-testing).
+**The valid handle range is `#1` through `#8`** (the manual and the error
+message `?BAD FILE NUMBER (MUST BE 1-8)` now agree). Verified: `#7` and `#8`
+work, `#9` fails. Up to **8 files can be open at once**.
 
 The handle must be a **literal number** — `OPEN "f" FOR OUTPUT AS #H`
 (where `H` is a variable) → `?EXPECTED FILE NUMBER AFTER #`.
@@ -67,17 +64,12 @@ Numeric parsing of a line:
 
 Blank lines are read as empty strings (`""`).
 
-### Gotcha: INPUT # cannot target an array element
+### INPUT # stores into array elements (since 3.0.1)
 
-`INPUT #1, N(2)` does NOT store into `N(2)`. The parser treats it as
-`INPUT #1, N` — the value goes into the **scalar** `N`, and `N(2)` stays
-`0`. Verified: after `INPUT #1, N(2)` on a line `"42"`, `N(2)=0` but
-`N=42`. To load an array, read into a scalar then assign:
-
-```basic
-INPUT #1, TMP
-L$(N) = TMP
-```
+`INPUT #1, N(2)` stores into `N(2)` directly (verified: after reading
+`"42"`, `N(2)=42`). In 3.0.0 it silently wrote the scalar `N` instead. You
+can also read into the element named by a just-read variable
+(`INPUT #1, I, A(I)`).
 
 ## CLOSE and EOF
 
@@ -114,13 +106,13 @@ after an error.
 | Error | Cause |
 |-------|-------|
 | `?FILE NOT FOUND` | `FOR INPUT` on a file that doesn't exist |
-| `?ILLEGAL FILE NAME` | extension not `.dat` (e.g. `.txt`, `.idx`) |
+| `?ILLEGAL FILE NAME` | extension not `.dat`/`.idx` (e.g. `.txt`) |
 | `?FILE ALREADY OPEN` | opening a handle that's already open |
 | `?FILE OPENED FOR INPUT` | `PRINT #` to a file opened FOR INPUT |
 | `?FILE NOT OPENED FOR INPUT` | `INPUT #` from a file opened FOR OUTPUT/APPEND |
 | `?FILE SIZE LIMIT EXCEEDED` | write would exceed the 256 KB limit |
 | `?INPUT PAST END` | reading past EOF |
-| `?BAD FILE NUMBER (MUST BE 1-4)` | handle outside 1-8 (message text is wrong) |
+| `?BAD FILE NUMBER (MUST BE 1-8)` | handle outside 1-8 |
 | `?EXPECTED FILE NUMBER AFTER #` | non-literal handle (`AS #H`) |
 
 There is **no error handling** — `ON ERROR GOTO` is not supported

@@ -1,8 +1,8 @@
-# TIMESHARING BASIC/3270BBS — Language Reference (v3.0.0)
+# TIMESHARING BASIC/3270BBS — Language Reference (v3.0.1)
 
 Every entry below was verified by running it on the live dev server
-(v3.0.0), not copied from the manual. Where the manual (v2.9.2) disagrees
-with observed behavior, the observed behavior is what's documented here.
+(v3.0.1), not copied from the manual. The manual is now v3.0.1 and matches;
+where it disagrees, the observed behavior is what's documented here.
 
 ## Program structure
 
@@ -15,10 +15,9 @@ Two modes, auto-detected from the FIRST non-empty, non-comment line:
 
 Label rules (verified):
 - Labels are `Name:` at the start of a line, case-insensitive.
-- The manual claims an 8-character label limit; **this is NOT enforced in
-  v3.0.0** — a 24-character label (`ThisIsAVeryLongLabelName`) loads and
-  runs fine. (The "Label exceeds 8 characters" string exists in the binary
-  but is not triggered.)
+- There is no label length limit — a 24-character label
+  (`ThisIsAVeryLongLabelName`) loads and runs fine. (The manual dropped its
+  8-character claim in v3.0.1.)
 - `GOTO`/`GOSUB`/`ON...GOTO`/`ON...GOSUB` take label names in label mode.
 - You CANNOT type a label program interactively at the `>` prompt — a bare
   `START:` is `?SYNTAX ERROR` (the `:` parses as a statement separator).
@@ -35,6 +34,10 @@ Label rules (verified):
   Whole-array assignment: `U{} = $UserInfo`.
 - Reserved words (PRINT, IF, FOR, ...) must not be used as variable names;
   doing so parses but behaves unpredictably.
+- **Built-in function names are reserved** (v3.0.1): `PI`, `LEN`, `DAY`,
+  `TIMER`, `HOUR`, `MINUTE`, `SECOND`, `YEAR`, `MONTH`, `RND`, `TIME$`,
+  `DATE$`, etc. cannot be variables — `PI = 3.14159` →
+  `?PI IS A BUILT-IN FUNCTION - RENAME VARIABLE`.
 
 ## Operators
 
@@ -92,7 +95,7 @@ Full detail in DEF_FN_REFERENCE.md. Key facts:
 
 ## String functions (all verified)
 
-`LEN LEFT$ RIGHT$ MID$ CHR$ ASC STR$ VAL SPACE$ UCASE$ LCASE$ TRIM$
+`LEN LEFT$ RIGHT$ MID$ CHR$ ASC STR$ VAL SPACE$ STRING$ UCASE$ LCASE$ TRIM$
 LTRIM$ RTRIM$ INSTR REPLACE$ BOXCHAR$`
 
 - `INSTR(s$, find$)` is 1-based; returns 0 if not found; empty find → 1.
@@ -100,13 +103,12 @@ LTRIM$ RTRIM$ INSTR REPLACE$ BOXCHAR$`
 - `SPACE$(n)` caps at 255 chars; `SPACE$(0)` → `""`.
 - **Strings cap at 2048 bytes** — over that → `?STRING TOO LONG (MAX 2048
   BYTES)` (the manual's "no fixed maximum length" is wrong).
-- **`STR$` is inconsistent**: a literal arg is optimizer-precomputed WITHOUT
-  the leading space (`STR$(5)`→`"5"`), but at runtime `STR$` prepends a
-  space to non-negative numbers (`STR$(H)`→`" 5"`). Wrap in `TRIM$` for
-  padding. Full detail in STRING_REFERENCE.md.
+- **`STR$` prefixes a space to non-negative numbers** (literal and variable
+  alike — the 3.0.0 literal/variable optimizer bug is fixed). Pad with
+  `RIGHT$("0" + TRIM$(STR$(n)), 2)`. Full detail in STRING_REFERENCE.md.
 - String comparison is **case-sensitive, ASCII order** (`"abc"`≠`"ABC"`,
   `"a"<"A"` is false). `MID$(s$,0,n)` → `?ILLEGAL QUANTITY ERROR`.
-- `STRING$` does NOT exist (parsed as an array).
+- `STRING$(n, c$)` exists (v3.0.1) — n copies of c$'s first character.
 - `BOXCHAR$(1-6)` = ┌ ┐ └ ┘ ─ │ (single-line box).
 - `CP310$(1-50)` = extended graphics (double-line box 7-12, blocks 21-28,
   arrows 29-32, shapes 33-36). Double-line box chars may not render in all
@@ -122,8 +124,8 @@ Full detail in MATH_REFERENCE.md. Key facts:
 - Trig is in radians. `PI()` = 3.14159..., `RADIANS(deg)`, `DEGREES(rad)`.
 - `INT` floors (see above). `SGN` = -1/0/1.
 - **`RND` argument is a RANGE, not a seed**: `RND(0)` = random float
-  `[0,1)`; `RND(n)` = random integer `[1,n]`; `RND(1)` = `1` (always).
-  `RND(0.5)` → ILLEGAL QUANTITY ERROR.
+  `[0,1)`; `RND(n)` = random integer `[1,n]`; `RND(1)` (arg in [1,2)) = a
+  random float in `[0,1)` (v3.0.1). `RND(0.5)` → ILLEGAL QUANTITY ERROR.
 - **No `ROUND`/`CEIL`/`FLOOR`/`MIN`/`MAX`** (parsed as arrays). Use `INT`:
   `FLOOR=INT(x)`, `CEIL=-INT(-x)`, `ROUND=INT(x+0.5)`.
 - Precedence: `^` (right-assoc) > unary `-` > `*` `/` `MOD` > `+` `-`. `/` is
@@ -163,15 +165,15 @@ String literals with nested quotes inside EVAL are unreliable.
 Full detail in FILE_IO_REFERENCE.md. Key facts:
 
 - `OPEN "f.dat" FOR INPUT|OUTPUT|APPEND AS #n`. **Handles are 1-8** (the
-  manual and the error text both say 1-4 — wrong), and the handle must be a
-  literal, not a variable.
-- Filenames must end `.dat`; `.idx`/`.txt` → `?ILLEGAL FILE NAME`.
+  manual and error text now agree), and the handle must be a literal, not a
+  variable.
+- Filenames must end `.dat` or `.idx`; `.txt` → `?ILLEGAL FILE NAME`.
 - `PRINT #n, ...` uses the same comma(tab)/semicolon(concat) rules as screen
   PRINT — **no special padding**.
 - **`INPUT #n, var` reads one LINE per variable.** `INPUT #1, A, B, C`
   reads three lines, not three comma-separated values.
-- **`INPUT #` cannot target an array element** — `INPUT #1, N(2)` stores
-  into the scalar `N`, not `N(2)`. Read into a scalar, then assign.
+- **`INPUT #` stores into array elements** (v3.0.1) — `INPUT #1, N(2)`
+  fills `N(2)`, not the scalar. Still reads one line per variable.
 - Numeric parse stops at the first non-numeric char; non-numeric → `0`.
 - **Writes are buffered**: data lands at `CLOSE` or normal program end. A
   runtime error loses the buffer (the file may not be created at all).
@@ -185,14 +187,15 @@ Full detail in ISAM_REFERENCE.md. Key facts:
 - `PUT #n, arr{}` (upsert), `GET #n, arr{}, KEY=expr|REC=n|NEXT`,
   `DELETE #n, KEY=expr|REC=n`, `RESET #n`. Status: `FOUND(n)`, `EOF(n)`,
   `DELETED(n)`.
-- **PUT and GET do NOT clear the array** — fields from the previous
-  operation persist. Re-`DIM arr{}` before each PUT/GET to avoid stale
-  fields (this is the #1 ISAM gotcha).
-- Records are schemaless; missing fields read back as `0`.
-- Record numbers are 1-based; sequential order is INSERTION order (not
-  key-sorted); PUT is a true upsert; DELETE is a soft delete (0x7F marker);
-  GET NEXT skips deleted records.
-- `DELETED(n)` is unreliable — don't trust it.
+- **A successful PUT empties the array** (v3.0.1) — no more field leaking.
+  A `GET` that finds nothing leaves the array as it was, so still re-`DIM
+  arr{}` before each GET to be safe.
+- Records are schemaless; missing fields read back as `0` (or `""` in BBS
+  data).
+- Record numbers are 1-based; **sequential order is KEY order** (v3.0.1, was
+  insertion order); PUT is a true upsert; DELETE is a soft delete (0x7F
+  marker); GET NEXT skips deleted records.
+- `DELETED(n)` now reports the record `GET` returned (v3.0.1 fixed it).
 
 ## Program chaining
 
@@ -225,12 +228,11 @@ Full detail in ISAM_REFERENCE.md. Key facts:
 column), errors/warnings/informational, variable cross-reference, function
 reference, data dictionary, optimizer report, load-module statistics.
 
-Warnings actually emitted in v3.0.0:
-- **Loop without SLEEP** (verified: `FOR I = 1 TO 1000000` triggers it).
-
-Warnings in the manual that are NOT emitted in v3.0.0:
-- "Insufficient comments" (13-line 0-comment program passed clean).
-- "Overly complex lines" (4-statement line passed clean).
+Warnings emitted in v3.0.1 (all verified live):
+- **Loop without SLEEP** (`FOR I = 1 TO 1000000`).
+- **Complex line** (3+ statements on one line).
+- **Long line** (>120 characters).
+- **Too few comments** (0 comments for N lines).
 
 Optimizer (verified): constant folding (`2 + 3 * 4` → `14`) and function
 precomputation (`LEN("Hello")` → `5`, `ASC("A")` → `65`). Never folds
@@ -248,10 +250,9 @@ division/MOD by zero, side-effecting functions, or variable expressions.
 
 ## Limits (from manual + verified where noted)
 
-- Line length 255 chars; program size 256 KB.
+- Line length 255 chars; program memory 10 MB (v3.0.1, incl. variables/arrays/output/open files).
 - Array dimension 10,000; 2D total 100,000,000 elements.
 - Execution: 55M iterations / 15s wall clock (SLEEP credits back).
-- Open files: 4 (#1-#4). Data file size 256 KB. Output buffer 1000 lines.
-- Filename: **10 chars max** (verified). Label: no enforced 8-char limit
-  (verified 24 chars works).
-- `SPACE$`/`STRING$` cap at 255; concatenation uncapped.
+- Open files: 8 (#1-#8). Data file size 256 KB. Output buffer 1000 lines.
+- Filename: **10 chars max** (verified). Label: no length limit.
+- `SPACE$`/`STRING$` cap at 255; concatenation capped at 2048 bytes.

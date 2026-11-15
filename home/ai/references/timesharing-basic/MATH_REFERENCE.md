@@ -1,4 +1,4 @@
-# Math Functions & Operators — Complete Reference (v3.0.0)
+# Math Functions & Operators — Complete Reference (v3.0.1)
 
 Everything below was verified by running it on the live interpreter.
 
@@ -43,7 +43,7 @@ integer-division operator.
 |------|---------|
 | `RND(0)` | random float in `[0, 1)` |
 | `RND(n)`, n≥1 | random **integer** in `[1, n]` (inclusive) |
-| `RND(1)` | always `1` (degenerate: the only value in [1,1]) |
+| `RND(1)` | random float in `[0, 1)` (v3.0.1; any arg in `[1,2)`) |
 | `RND(0.5)` | `?ILLEGAL QUANTITY ERROR` (fractional arg) |
 
 Verified: `RND(2)` over 60 trials gave only 1s and 2s (zero 0s); `RND(3)`
@@ -53,8 +53,9 @@ gave 1, 2, 3; `RND(10)` gave values in 1-10.
 - For a random integer in `[1, N]`, just use `RND(N)`.
 - For a random float in `[0, 1)`, use `RND(0)`.
 - For a random integer in `[0, N-1]`, use `RND(N) - 1`.
-- The manual's example `INT(RND(1) * N + 1)` is WRONG — `RND(1)` is always
-  1, so it returns `N+1` every time (see DEF_FN_REFERENCE.md).
+- The manual's old example `INT(RND(1) * N + 1)` was wrong when `RND(1)`
+  returned 1; with `RND(1)` now random 0-1 it works again, but `RND(N)` is
+  simpler for a random integer in `[1,N]`.
 
 ## Error cases (verified)
 
@@ -110,7 +111,7 @@ ABS INT SGN SQRT SQR SIN COS TAN ATAN ASIN ACOS LOG EXP RND PI RADIANS DEGREES
 ```
 
 - `INT` floors; `^` is right-assoc and binds tightest; `/` is float.
-- `RND(0)` = float [0,1); `RND(n)` = int [1,n]; `RND(1)` = 1.
+- `RND(0)` = float [0,1); `RND(n)` = int [1,n]; `RND(1)` = float [0,1) (v3.0.1).
 - `0^0`=1; `SQRT(-1)`/`LOG(0)`/`ASIN(2)` → ILLEGAL QUANTITY ERROR;
   `x/0` → DIVISION BY ZERO.
 - No ROUND/CEIL/FLOOR/MIN/MAX — use `INT`.

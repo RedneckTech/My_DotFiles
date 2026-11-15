@@ -1,7 +1,7 @@
 # BOXCHAR$(n) and CP310$(n) — Box-Drawing & Graphics Characters
 
 Everything below was verified by dumping the raw bytes the functions return
-on the live v3.0.0 interpreter (not just eyeballing the screen, which is
+on the live v3.0.1 interpreter (not just eyeballing the screen, which is
 misleading for the double-line characters).
 
 ## BOXCHAR$(n) — single-line box (n = 1-6)

@@ -2,7 +2,7 @@
 
 A practical style guide for writing clean, maintainable BASIC on the
 3270BBS system. Every rule here was verified against the live interpreter
-(v3.0.0) on the dev server, not just copied from the manual.
+(v3.0.1) on the dev server, not just copied from the manual.
 
 ## 1. Pick a program style and stick to it
 
@@ -36,9 +36,8 @@ START:
 Rules:
 - Use increments of 10 (10, 20, 30) so you can insert lines later.
 - Label-based programs MUST begin with a `START:` label.
-- Labels are case-insensitive, start with a letter/underscore. The manual
-  claims an 8-character limit, but v3.0.0 does NOT enforce it (a 24-char
-  label runs fine).
+- Labels are case-insensitive, start with a letter/underscore. There is no
+  length limit (the manual dropped its 8-character claim in v3.0.1).
 - Do NOT mix line numbers and labels in the same `ON...GOTO`/`ON...GOSUB`.
 
 **Important gotcha:** you cannot type a label-based program interactively at
@@ -59,10 +58,9 @@ Two comment forms, both verified:
 
 - `REM` and `'` are equivalent for full-line comments.
 - `'` can also start an inline comment after any statement.
-- The v2.9.2 manual claims CHECK warns on "insufficient comments"
-  (< 1 REM per 10 lines). **This warning is NOT active in v3.0.0** — a
-  13-line program with zero comments passed CHECK with no warnings. Do not
-  rely on CHECK to enforce comment density; enforce it yourself.
+- CHECK warns on "too few comments" (v3.0.1) — a program with too few
+  comments gets a warning. Still enforce comment density yourself; the
+  threshold is loose.
 
 ## 3. Use CHECK as your quality gate
 
@@ -95,8 +93,9 @@ variable that is DEFINED but never REFERENCED is a candidate for removal.
 
 ## 4. Avoid the warnings CHECK does emit
 
-The one warning that is active in v3.0.0 is the **loop-without-SLEEP**
-warning:
+The warnings CHECK emits (all active in v3.0.1): **loop-without-SLEEP**,
+**complex line** (3+ statements), **long line** (>120 chars), and **too few
+comments**. The loop-without-SLEEP warning looks like:
 
 ```
 20 FOR I = 1 TO 1000000
@@ -145,9 +144,9 @@ Implications for style:
 - Numeric variables: no suffix (`COUNT`, `TOTAL`).
 - String variables: `$` suffix (`NAME$`, `TITLE$`).
 - Names start with a letter, contain letters/digits, are case-insensitive.
-- Reserved keywords cannot be variable names. `FN` is technically usable
-  as a variable in v3.0.0 but is strongly discouraged (conflicts with
-  `DEF FN` user functions).
+- Reserved keywords cannot be variable names. Built-in function names
+  (`PI`, `LEN`, `DAY`, ...) are reserved since 3.0.1 — using one as a
+  variable raises `?X IS A BUILT-IN FUNCTION - RENAME VARIABLE`.
 - Arrays are **0-indexed**: `DIM A(3)` gives elements `A(0)`..`A(3)`.
   `DIM N$(2)` gives `N$(0)`..`N$(2)`.
 
@@ -165,7 +164,7 @@ Implications for style:
 
 - Always `CLOSE` files when done (auto-closed at program end, but explicit
   is clearer).
-- File numbers are `#1`–`#4` (max 4 open at once).
+- File numbers are `#1`–`#8` (max 8 open at once).
 - Data filenames must end in `.dat` or `.idx`; no path separators.
 - Use `WHILE NOT EOF(1)` to read to end of file rather than a fixed count.
 
@@ -182,10 +181,8 @@ CLOSE #1
 
 - Max line length is 255 characters; the editor's data area is 71 columns,
   so keep source lines under ~71 chars for the ISPF editor.
-- The v2.9.2 manual claims CHECK flags lines with 3+ colon-separated
-  statements as "complex". **This warning is NOT active in v3.0.0** — a
-  line with 4 statements passed CHECK clean. Still, prefer one statement
-  per line for readability.
+- CHECK flags lines with 3+ colon-separated statements as "complex"
+  (v3.0.1). Still, prefer one statement per line for readability.
 
 ## 10. Quick reference
 

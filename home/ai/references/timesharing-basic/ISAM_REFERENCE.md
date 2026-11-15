@@ -1,4 +1,4 @@
-# Indexed Files (ISAM) — Complete Reference (v3.0.0)
+# Indexed Files (ISAM) — Complete Reference (v3.0.1)
 
 Everything below was verified by running it on the live interpreter and by
 inspecting the resulting `.dat` files byte-for-byte.
@@ -13,7 +13,7 @@ C{"id"} = "001" : C{"name"} = "Alice" : PUT #1, C{}
 CLOSE #1
 ```
 
-- File handles `#1`-`#4` (max 4 open at once, same as sequential files).
+- File handles `#1`-`#8` (max 8 open at once, same as sequential files).
 - `KEY = "field"` names the field that acts as the primary key.
 - The data file is plain `.dat`; **no separate `.idx` file is created** —
   the index is built in memory when the file is opened.
@@ -36,33 +36,15 @@ CLOSE #1
 |----------|---------|
 | `FOUND(n)` | 1 if the last GET found a record |
 | `EOF(n)` | 1 at end of file |
-| `DELETED(n)` | deleted status — **UNRELIABLE, see below** |
+| `DELETED(n)` | deleted status of the record `GET` returned (fixed in 3.0.1) |
 
-## Critical gotcha: PUT and GET do NOT clear the array
+## Array clearing: PUT empties, GET-finds-nothing leaves it (fixed in 3.0.1)
 
-This is the single most important thing to know. The associative array you
-PUT from and GET into is **reused** — fields from the previous operation
-persist.
-
-Verified failure:
-
-```basic
-C{"id"}="1" : C{"name"}="Alice" : C{"age"}=30 : PUT #1, C{}
-C{"id"}="2" : C{"city"}="NYC" : PUT #1, C{}      ' only id+city intended
-```
-
-The second record in the file ends up as:
-
-```
-id=2  name=Alice  age=30  city=NYC
-```
-
-— `name` and `age` leaked in from the first record. The same happens on
-GET: reading a record that lacks a field returns the *stale* value from the
-previous GET, not an empty value.
-
-**Fix: re-DIM the array before each PUT and each GET.** `DIM C{}` clears an
-associative array (verified: after re-DIM, missing keys return 0):
+Since 3.0.1, a successful `PUT` **empties the array** after writing, so
+fields no longer leak between records (in 3.0.0 the array was reused and
+stale fields persisted). A `GET` that finds nothing leaves the array as it
+was. To be safe — and to stay portable to older builds — re-DIM the array
+before each operation:
 
 ```basic
 DIM C{}                          ' clear before each PUT
@@ -72,8 +54,7 @@ DIM R{}                          ' clear before each GET
 GET #1, R{}, KEY = "2"
 ```
 
-With the re-DIM, records are written exactly as intended, and a missing
-field correctly returns `0`.
+`DIM C{}` clears an associative array; a missing field reads back `0`.
 
 ## Records are schemaless
 
@@ -85,9 +66,8 @@ code to handle absent fields.
 
 - **Record numbers are 1-based.** `REC = 1` is the first record; `REC = 0`
   returns `FOUND = 0`.
-- **Sequential order is INSERTION order, not key order.** Insert 003, 001,
-  002 and a `RESET` + `NEXT` scan returns 003, 001, 002 — the key index is
-  for random access only, it does not sort the file.
+- **Sequential order is KEY order** (v3.0.1; was insertion order). Insert
+  003, 001, 002 and a `RESET` + `NEXT` scan returns 001, 002, 003.
 - **`PUT` is a true upsert.** Writing the same key twice updates the
   existing record in place (the file keeps one record, last write wins).
 - **`DELETE` is a soft delete.** The record is marked with a `0x7F` (DEL)
@@ -115,13 +95,11 @@ id=3<TAB>name=Carol
 Field order in a record follows the order the keys were set in the
 associative array, not a fixed schema (so `name=...<TAB>id=...` is possible).
 
-## `DELETED(n)` is unreliable
+## `DELETED(n)` (fixed in 3.0.1)
 
-During a sequential scan, `DELETED(1)` reported `1` for a record that was
-NOT deleted (the deleted record was the *next* one), and `0` for a
-correctly-undeleted record. Do not trust `DELETED()` for correctness —
-`GET ... NEXT` already skips deleted records, so a normal scan only yields
-live records and `DELETED()` is unnecessary.
+`DELETED(n)` now reports the deleted status of the record `GET` just
+returned. `GET ... NEXT` still skips deleted records, so a normal scan only
+yields live records and `DELETED()` is rarely needed.
 
 ## Error messages (verified)
 
@@ -129,7 +107,8 @@ live records and `DELETED()` is unnecessary.
 |-------|-------|
 | `?FILE NOT OPENED FOR INDEXED` | PUT/GET on a file opened FOR INPUT/OUTPUT/APPEND |
 | `?KEY FIELD 'id' NOT SET` | `PUT` without setting the key field |
-| `?ARRAY NOT DEFINED` | documented for undimensioned arrays (GET with an undefined array silently returned no record in testing) |
+| `?ARRAY NOT DEFINED: name` | PUT of an associative array not declared with DIM |
+| `?ARRAY NOT DIMENSIONED: name` | any other use of an array not declared with DIM |
 
 ## Working pattern (copy this)
 
