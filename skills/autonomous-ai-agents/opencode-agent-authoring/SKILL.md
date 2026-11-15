@@ -159,3 +159,10 @@ stubs. A finished agent has these sections, in this order:
   verbatim you cannot widen the allow-list as a side effect. Either leave
   the body on the permitted path, or flag the permission change the repoint
   requires and get the user's explicit OK before making it.
+- An agent that points at the STOWED asset dirs (`~/ai/references/<subject>/`,
+  `~/ai/scripts/<tool>/`) is only correct if those files actually exist in
+  the dotfiles repo (`home/ai/...`). A doc list naming references that live
+  only in a project working copy is broken on every other machine: copy each
+  new doc into `~/.user_config/home/ai/references/<subject>/`, symlink it
+  into `~/ai/...`, and commit. Same for any helper script the body tells the
+  agent to run — put it in `home/ai/scripts/`, not only in the project.

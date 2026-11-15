@@ -74,6 +74,13 @@ Alternate, which `tsu` never sends; `-oversize` makes c3270 send
 `IBM-3279-2-E` and the status line `2 24 80`. The gain over x3270 is
 headless operation, not a bigger screen.
 
+c3270 does NOT improve the CP310 graphics either: it has no CP310 code
+page (`c3270 -codepage cp310` → `Warning: Cannot find code page "cp310"`),
+so the double-line/graphics characters fall back to `■` exactly as in
+x3270. The BBS sends them as 3270 Graphic Escape (`3F 3F 08 82`) and the
+`bracket` charset maps only the bracket range. See
+`references/3270bbs.md` for the per-range render table.
+
 ## Lock and reset semantics (the part that costs time)
 
 A 3270 keyboard locks when an AID key is sent (Enter/PF/Clear/PA) or on an
