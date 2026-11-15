@@ -56,7 +56,14 @@ no X11 — good for SSH/headless. Three differences:
   under a pty: `script -qec /tmp/launch.sh /tmp/c3270.ts` where launch.sh
   `exec`s c3270. Without the pty it exits with "Error opening terminal".
 - **Same protocol.** `String`/`Tab`/`Enter`/`PF(n)`/`Ascii`/`Query(...)`
-  behave identically; a TCP client replaces the fifo reader.
+  behave identically; a TCP client replaces the fifo reader — use
+  `drive_c3270.py` (same CLI as `drive.py` plus `--port`; project copy at
+  `basic-learning/drive_c3270.py`, mirrored at `~/ai/scripts/x3270/`).
+- **TERMINAL-TYPE is a separate resource.** `-model` sets the LOCAL screen
+  size only; the name sent during TN3270 negotiation comes from `termName`
+  and defaults to `IBM-3279-2-E` even with `-model 3279-5`. Send a
+  different one with `-xrm "c3270.termName: IBM-3279-5-E"` and confirm it
+  in a `-trace` log's `SENT SB TERMINAL TYPE IS ...` line.
 
 Model/oversize reality on this BBS: c3270 supports `-model 3278|3279-[2-5]`
 and `-oversize <cols>x<rows>` and reports the larger size locally, but the

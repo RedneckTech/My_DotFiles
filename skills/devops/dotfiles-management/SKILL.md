@@ -84,6 +84,13 @@ stow, then commit/push) and `update_dotfiles_safe.sh` (adds `--adopt` conflict
 handling with backups to `~/.local/state/dotfiles-stow/backups/<ts>/`). Use the
 safe one when a machine has existing-file conflicts.
 
+Dry-run noise: stow prints `BUG in find_stowed_path? Absolute/relative
+mismatch between Stow dir .user_config and path ~/.steam/...` for
+pre-existing symlinks in the target that point outside the stow dir (Steam
+runtime links are the usual case). It is harmless — the run still applies
+and exits 0. Judge a dry run by the trailing "would cause conflicts" list,
+not by these warnings.
+
 ## Rules
 
 1. **Always pass `--no-folding`.** Without it stow folds whole directories into
@@ -154,6 +161,15 @@ safe one when a machine has existing-file conflicts.
    `--no-folding` links into a PRE-EXISTING real directory without clobbering
    its unmanaged files, so a `~/ai/` that already held other files is fine as
    long as no individual target filename collides.
+
+8. **Remote moved while you have LOCAL COMMITS: rebase, don't merge.**
+   `git push` is rejected when `origin/master` has commits you do not have.
+   `git fetch origin`, then check `git log --oneline master..origin/master`
+   (remote-only) and `origin/master..master` (local-only), then
+   `git rebase origin/master` and push. Rebase replays your UNPUSHED commits
+   on top of the remote's and keeps history linear; a merge commit buries
+   them. Never rebase commits that are already published — use a merge
+   there.
 
 ## Reinstall checklist (`init-software.txt`)
 
