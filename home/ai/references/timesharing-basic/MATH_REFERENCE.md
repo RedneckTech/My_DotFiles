@@ -37,17 +37,25 @@ integer-division operator.
 
 `MOD` sign follows the dividend: `-7 MOD 3` = `-1`.
 
-## RND — argument is a range, not a seed
+## RND — range for non-negative, seed for negative
 
 | Call | Returns |
 |------|---------|
 | `RND(0)` | random float in `[0, 1)` |
-| `RND(n)`, n≥1 | random **integer** in `[1, n]` (inclusive) |
-| `RND(1)` | random float in `[0, 1)` (v3.0.1; any arg in `[1,2)`) |
-| `RND(0.5)` | `?ILLEGAL QUANTITY ERROR` (fractional arg) |
+| `RND(n)`, n≥2 | random **integer** in `[1, n]` (inclusive) |
+| `RND(1)` (any arg in `[1,2)`) | random float in `[0, 1)` |
+| `RND(n)`, n<0 | **reseeds** the generator with n; returns a float in `[0,1)` |
+| `RND(x)`, 0<x<1 | `?ILLEGAL QUANTITY ERROR` |
 
 Verified: `RND(2)` over 60 trials gave only 1s and 2s (zero 0s); `RND(3)`
 gave 1, 2, 3; `RND(10)` gave values in 1-10.
+
+**A negative argument reseeds** — a repeatable sequence. Verified live:
+`R = RND(-7)` then two `RND(100)` calls give the same two values every
+run (`29 91`). Use `RND(-seed)` for deterministic (testable) randomness.
+
+`RND` without parentheses is `RND(1)` (GW-BASIC style):
+`INT(RND * 6) + 1` is a die roll.
 
 **Consequences:**
 - For a random integer in `[1, N]`, just use `RND(N)`.
@@ -111,7 +119,8 @@ ABS INT SGN SQRT SQR SIN COS TAN ATAN ASIN ACOS LOG EXP RND PI RADIANS DEGREES
 ```
 
 - `INT` floors; `^` is right-assoc and binds tightest; `/` is float.
-- `RND(0)` = float [0,1); `RND(n)` = int [1,n]; `RND(1)` = float [0,1) (v3.0.1).
+- `RND(0)` = float [0,1); `RND(n)` n≥2 = int [1,n]; `RND(1)` = float [0,1);
+  `RND(-seed)` reseeds (repeatable).
 - `0^0`=1; `SQRT(-1)`/`LOG(0)`/`ASIN(2)` → ILLEGAL QUANTITY ERROR;
   `x/0` → DIVISION BY ZERO.
 - No ROUND/CEIL/FLOOR/MIN/MAX — use `INT`.

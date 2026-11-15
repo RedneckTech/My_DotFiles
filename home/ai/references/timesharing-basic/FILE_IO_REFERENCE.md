@@ -14,6 +14,9 @@ OPEN "name.dat" FOR APPEND AS #1    ' add to end (creates if missing)
 
 - **File names must end in `.dat` or `.idx`.** `.txt` and anything else →
   `?ILLEGAL FILE NAME`. (`.idx` is accepted since 3.0.1.)
+- **Max 32 characters including the extension** (a 28-char stem + `.dat` =
+  32 works; 33 fails `?ILLEGAL FILE NAME`). This is a DATA-file limit — the
+  10-char limit applies only to `.bas` PROGRAM names.
 - No path separators allowed.
 - `APPEND` creates the file if it does not exist.
 
@@ -40,6 +43,11 @@ PRINT #1, "x"; TAB(10); "y"
 was actually the comma separator: a comma tabs to the next **14-column
 print zone** (value 1 in cols 1-14, value 2 at col 15, etc.); a semicolon
 concatenates with no separator. Same rules as screen PRINT.
+
+**A trailing `;` does NOT keep the line open in `PRINT #`** — every
+`PRINT #` statement ends its line (verified: `PRINT #1,"a";` then
+`PRINT #1,"b";` writes `a\nb\n`, not `ab`). To build a long line, join it
+into one string first (`L$=L$+" "+X$` … `PRINT #1, L$`).
 
 ## INPUT #
 
@@ -131,6 +139,7 @@ There is **no error handling** — `ON ERROR GOTO` is not supported
 |-------|-------|-------|
 | Open files | 8 | handles `#1`-`#8` (manual says 4 — wrong) |
 | File size | 256 KB | `?FILE SIZE LIMIT EXCEEDED` |
+| Data file name | 32 chars | including the `.dat`/`.idx` extension |
 | Line length (source) | 255 chars | separate from data lines |
 
 ## Working pattern (copy this)
