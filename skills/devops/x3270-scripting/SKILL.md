@@ -28,8 +28,9 @@ application; the lock/reset semantics below apply to every 3270 host.
   gotchas (DEF FN, ISAM, CHAIN, file I/O, math, strings, BOXCHAR$/CP310$,
   panels) and the
   fast test loop (write the `.bas` to the host over SSH, `LOAD`+`RUN` via
-  the fifo, capture output to a `.dat`). The bundled manual is v2.9.2 and
-  has errors; the repo `basic-learning/*.md` docs are the verified source.
+  the fifo, capture output to a `.dat`). The bundled manual is v3.0.1 and
+  matches the interpreter, but still has errors; the repo
+  `basic-learning/*.md` docs are the verified source.
 
 ## Core actions
 
@@ -42,6 +43,29 @@ application; the lock/reset semantics below apply to every 3270 host.
 - `Quit` — end the session
 
 `Wait(N,Output)` argument order is N-first. `Wait(Output,N)` errors.
+
+## c3270 (curses) instead of x3270
+
+c3270 is the terminal member of the suite: same actions, same status line,
+no X11 — good for SSH/headless. Three differences:
+
+- **No `-script`** (c3270 rejects it). The script protocol is exposed on a
+  TCP port via `-scriptport [addr:]port`, or a UNIX socket via `-socket`
+  (`/tmp/x3sck.<pid>`).
+- **Needs a tty.** It is curses-based; from a non-interactive shell run it
+  under a pty: `script -qec /tmp/launch.sh /tmp/c3270.ts` where launch.sh
+  `exec`s c3270. Without the pty it exits with "Error opening terminal".
+- **Same protocol.** `String`/`Tab`/`Enter`/`PF(n)`/`Ascii`/`Query(...)`
+  behave identically; a TCP client replaces the fifo reader.
+
+Model/oversize reality on this BBS: c3270 supports `-model 3278|3279-[2-5]`
+and `-oversize <cols>x<rows>` and reports the larger size locally, but the
+server stays at 24x80. Models 3/4/5 default to a 24x80 screen and only
+switch to the alternate size (27x132 for model 5) on Erase/Write
+Alternate, which `tsu` never sends; `-oversize` makes c3270 send
+`IBM-DYNAMIC`, which the server ignores. `Query(Model)` stays
+`IBM-3279-2-E` and the status line `2 24 80`. The gain over x3270 is
+headless operation, not a bigger screen.
 
 ## Lock and reset semantics (the part that costs time)
 

@@ -133,7 +133,11 @@ stubs. A finished agent has these sections, in this order:
   `.user_config/home/.config/opencode/agents/`, not `~/.config/opencode/`.
 - Do not invent tool versions — shell/python/node versions differ per box;
   probe before writing environment facts. `/bin/sh` may be `dash`, not bash,
-  which changes what "portable shell" means.
+  which changes what "portable shell" means. The same applies to capability
+  claims inherited from an older revision of the agent: a line like "c3270
+  exists but is NOT scriptable" can be flat wrong (c3270 has no `-script`
+  but does expose the same protocol via `-scriptport`/`-socket`). Re-probe
+  the actual binary before repeating such a claim.
 - Do not overwrite frontmatter when editing — preserve `temperature`,
   `permission`, and `mode` as-is.
 - A broad "web apps"-style agent is underdetermined — clarify the stack
