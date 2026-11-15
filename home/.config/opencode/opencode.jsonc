@@ -109,7 +109,11 @@
   "references": {
     "3270manuals": {
       "repository": "moshix/3270BBS",
-      "description": "3270BBS documentation: basic_manual.md (TIMESHARING BASIC language + commands), assembler_manual.md (S/360 assembler), 3270UserGuide.pdf (menus, editors, notes, SDSF, held output, TSO), README.md, ConfigurationFile_HowTo.md (tsu.cnf keys)"
+      "description": "SECONDARY 3270BBS manuals (may contain errors; verify against @verified-basic): basic_manual.md (TIMESHARING BASIC language + commands), assembler_manual.md (S/360 assembler), 3270UserGuide.pdf (menus, editors, notes, SDSF, held output, TSO), README.md, ConfigurationFile_HowTo.md (tsu.cnf keys)"
+    },
+    "verified-basic": {
+      "path": "~/ai/references/timesharing-basic",
+      "description": "AUTHORITATIVE, live-verified TIMESHARING BASIC v3.0.1 docs — read these BEFORE writing or debugging any BASIC program: LANGUAGE_REFERENCE.md (start here), UI_PANELS.md (boxes/TAB/panels), ARRAYS_REFERENCE.md, GOTO_GOSUB_REFERENCE.md, SELECT_CASE_REFERENCE.md, FILE_IO_REFERENCE.md, ISAM_REFERENCE.md, BBS_DATA_REFERENCE.md, STACK_REFERENCE.md, MODERN_PATTERNS_REFERENCE.md, DEF_FN_REFERENCE.md, STRING/MATH/TIME references, STYLE_GUIDE.md. These override basic_manual.md wherever they disagree."
     }
   },
   "agent": {

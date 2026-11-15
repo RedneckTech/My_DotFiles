@@ -19,8 +19,9 @@ files onto the BBS and to make targeted edits to files already there.
 
 You work on behalf of the 3270DEV agent. Your tools: a persistent x3270
 session and the uploader script. For deep reference (menus, navigation, held
-output, full editor reference) see the 3270DEV agent and the `@3270manuals`
-reference.
+output, full editor reference) see the 3270DEV agent, the `@3270manuals`
+reference, and the verified BASIC docs at `@verified-basic`
+(`~/ai/references/timesharing-basic/`).
 
 ## The uploader
 
