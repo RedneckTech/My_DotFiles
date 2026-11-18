@@ -39,7 +39,7 @@ tools `ripgrep`, `shellcheck`, `fastfetch`, `glances`, `gum`, `lazygit`,
 ## User-local binaries (`~/.local/bin`)
 
 `codegraph cua-driver fbc gen-llms-txt.py github-mcp-server hermes hermes-acp
-hermes-agent inv invoke llmdoc lua-language-server markitdown-mcp
+hermes-agent hercules inv invoke llmdoc lua-language-server markitdown-mcp
 mcp-filesystem-server mcp-server-memory mcp-server-sequential-thinking node
 npm npx playwright-mcp tealdeer terminal-driver-mcp tldr zig zls`
 
@@ -77,6 +77,36 @@ directory end". tealdeer ≥ 1.8.0 downloads from the GitHub releases asset.
   Needs `libudev-dev` at build time (present).
 
 Full details (install, tuning, OpenCode wiring): `../AI_DOCs/07-local-llm.md`.
+
+## Mainframe — Hercules Hyperion (built from source)
+
+- **Hercules Hyperion** (SDL 4.x), the IBM S/370 · S/390 · z/Arch mainframe
+  emulator, built from source at `~/MainFrames/hyperion` (git master of
+  SDL-Hercules-390/Hyperion, HEAD `e4b3c8b8`).
+- **Version**: 4.9.1.11618-SDL-ge4b3c8b8 (built 2026-11-18).
+- **Build**: autotools. The `-dev` headers (zlib, bzip2, libltdl) come from
+  Homebrew (`/home/linuxbrew/.linuxbrew`), passed via
+  `CPPFLAGS=-I/home/linuxbrew/.linuxbrew/include` and
+  `LDFLAGS=-L/home/linuxbrew/.linuxbrew/lib -Wl,-rpath,...`.
+  `./configure --prefix=$HOME/.local`, then `make clean && make -j16 && make
+  install`. (A `make clean` is required after any `--prefix` change:
+  `-DMODULESDIR` is baked into object files at compile time and make won't
+  recompile them on its own.)
+- **Installed under `~/.local`** (on PATH):
+  - `~/.local/bin` — `hercules` + ~40 utilities (`dasdinit`, `dasdconv`,
+    `dasdcopy`, `cckdcdsk`, `cckdcomp`, `cckdmap`, `tapecopy`, `hetget`,
+    `vmfplc2`, `card2txt`, …; several are `dasdcopy` symlink aliases such as
+    `fba2cfba`).
+  - `~/.local/lib` — shared libs `libherc{,.d,.s,.t,.u}.so`.
+  - `~/.local/lib/hercules` — 17 device modules (`hdt*.so`) + `dyncrypt` /
+    `dyngui`.
+- **Runs from anywhere**: libs resolve via rpath to `~/.local/lib` (no
+  `ld.so.conf` change needed); device modules dlopen from the baked-in
+  `MODULESDIR` (`~/.local/lib/hercules`).
+- **Guest-OS material** lives in `~/MainFrames/`: the TK4- distribution
+  (`mvs-tk5/`), TK4-/MVS 3.8 zips and manuals. The 3270 BBS server project is
+  separate — see `01-system-and-hardware.md` (BlackBox) and the 3270DEV agent
+  in `../AI_DOCs/02-opencode.md`.
 
 ## snap
 
