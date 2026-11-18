@@ -27,8 +27,9 @@ application; the lock/reset semantics below apply to every 3270 host.
   3270BBS host — `references/3270bbs.md` carries the verified language
   gotchas (DEF FN, ISAM, CHAIN, file I/O, math, strings, BOXCHAR$/CP310$,
   panels) and the
-  fast test loop (write the `.bas` to the host over SSH, `LOAD`+`RUN` via
-  the fifo, capture output to a `.dat`). The bundled manual is v3.0.1 and
+  fast test loop (write the `.bas` to the host over SSH — no `_` in the
+  filename, it is reserved — `LOAD`+`RUN` via the fifo, capture output to a
+  `.dat`). The bundled manual is v3.0.1 and
   matches the interpreter, but still has errors; the repo
   `basic-learning/*.md` docs are the verified source.
 
